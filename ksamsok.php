@@ -3,7 +3,6 @@
 class KSamsok {
   public $key;
   public $url = 'http://kulturarvsdata.se/ksamsok/api?';
-  public $hits;
   
   private function validxml($url) {
     try {
@@ -40,14 +39,20 @@ class KSamsok {
     }
   }
 
-  function __construct($key, $hits) {
+  function __construct($key) {
     $this->key = $key;
-    $this->hits = $hits;
+
+    // check if URL does return a error
+    $testquery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"';
+    $this->validxml($testquery);
+  }
+
+  public function search($text, $start, $hits) {
 
     try {
       // check if $hits(hitsPerPage) is valid
       // http://www.ksamsok.se/in-english/api/#search
-      if(!$hits >= 1 && !$hits <= 500) {
+      if($hits < 1 || $hits > 500) {
         throw new Exception($hits . ' is not number between 1-500.');
       }
 
@@ -57,14 +62,8 @@ class KSamsok {
       die();
     }
 
-    // check if URL does return a error
-    $testquery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"';
-    $this->validxml($testquery);
-  }
-
-  public function search($text, $start) {
     // create the request URL
-    $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $this->hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"';
+    $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"';
     // check if URL does return a error
     $this->validxml($urlquery);
     
