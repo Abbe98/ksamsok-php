@@ -12,17 +12,26 @@ class KSamsok {
 
   function __construct($key, $hits) {
     $this->key = $key;
-    
-      //http://kulturarvsdata.se/ksamsok/api?x-api=test&method=search&query=text%3D"test"
-    try { 
+    $this->hits = $hits;
+
+    try {
+      // check if $hits(hitsPerPage) is valid
+      // http://www.ksamsok.se/in-english/api/#search
+      if(!$hits >= 1 || !$hits <= 500) {
+        throw new Exception($hits . ' is not number between 1-500.');
+      }
+
       $testquery = $this->url . 'x-api=' . $key . '&method=search&query=text%3D"test"';
+      // @ignore warning, it's handled below
       @$xml = file_get_contents($testquery);
 
+      // check if file_get_contents returned a error or warning
       if($xml === false) {
         throw new Exception('Bad API request or wrong API key. (' . $testquery . ')');
       }
     } catch(Exception $e) {
       echo 'Caught Exception: ',  $e->getMessage(), "\n";
+      // these are fatal errors so kill the script
       die();
     }
   }
