@@ -22,8 +22,22 @@ class KSamsok {
   }
 
   private function parse($urlquery, $type) {
-    $xml = new SimpleXMLElement($urlquery);
+    // get xml
+    $xml = new SimpleXMLElement(file_get_contents($urlquery));
+    // shortcut
     $result = $xml->result;
+
+    if($type === 'search') {
+      //parse
+    }
+
+    if($type === 'relations') {
+      //parse
+    }
+
+    if($type === 'searchhelp') {
+      //parse
+    }
   }
 
   function __construct($key, $hits) {
@@ -54,15 +68,25 @@ class KSamsok {
     // check if URL does return a error
     $this->validxml($urlquery);
     
-
+    return $this->parse($urlquery, 'search');
   }
 
   public function relations($objectid) {
-    //http://www.ksamsok.se/api/metoder/#getRelations
+    // create the request URL
+    $urlquery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectid;
+    // check if URL does return a error
+    $this->validxml($urlquery);
+
+    return $this->parse($urlquery, 'relations');
   }
 
-  public function searchHelp($string) {
-    //http://www.ksamsok.se/api/metoder/#searchHelp
+  public function searchhelp($string) {
+    // create the request URL
+    $urlquery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=5';
+    // check if URL does return a error
+    $this->validxml($urlquery);
+
+    return $this->parse($urlquery, 'searchhelp');
   }
 }
 ?>
