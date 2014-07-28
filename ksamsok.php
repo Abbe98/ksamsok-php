@@ -55,9 +55,82 @@ class KSamsok {
 
     // get the XML
     $xml = file_get_contents($urlquery);
-    # write parsing stuff
 
-    //return $result;
+    // instead of using XPath to parse RDF just by pass it
+    $xml = str_replace('rdf:', 'RDF_', $xml);
+    $xml = str_replace('pres:', 'pres_', $xml);
+    $xml = str_replace('georss:', 'georss_', $xml);
+    $xml = str_replace('gml:', 'gml_', $xml);
+    $xml = str_replace('geoF:', 'geoF_', $xml);
+    $xml = str_replace('foaf:', 'foaf_', $xml);
+    $xml = str_replace('rel:', 'rel_', $xml);
+    $xml = str_replace('ns5:', 'ns5_', $xml);
+    $xml = str_replace('ns6:', 'ns6_', $xml);
+
+    $xml = new SimpleXMLElement($xml);
+    print_r($xml);
+
+    // get number of total hits
+    $result['hits'] = (string) $xml->totalHits;
+
+    $i = 0;
+    foreach ($xml->records->record as $record) {
+      //@ignore and just leave array values empty if they don't exists
+
+      // get current object
+      @$result['result'][$i]['object'] = (string) $record->RDF_RDF->Entity->attributes()->RDF_about;
+
+      // get service organization
+      @$result['result'][$i]['org'] = (string) $record->RDF_RDF->Entity->serviceOrganization;
+
+      // get url
+      @$result['result'][$i]['url'] = (string) $record->RDF_RDF->Entity->url;
+
+      // get subject(RDF)
+      @$result['result'][$i]['subject'] = (string) $record->RDF_RDF->Entity->subject->attributes()->RDF_resource;
+
+      // get media type
+      @$result['result'][$i]['mediaType'] = (string) $record->RDF_RDF->Entity->mediaType;
+
+      // get licence
+      @$result['result'][$i]['licence'] = (string) $record->RDF_RDF->Entity->itemLicenseUrl->attributes()->RDF_resource;
+
+      // get title
+      @$result['result'][$i]['title'] = (string) $record->RDF_RDF->Entity->itemLabel;
+
+      // get type
+      @$result['result'][$i]['pres_type'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_type;
+
+      // get pres id
+      @$result['result'][$i]['pres_id'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_id;
+
+      // get pres item label
+      @$result['result'][$i]['pres_item_label'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_itemLabel;
+
+      # this should be a foreach() loop
+      // get pres tag
+      @$result['result'][$i]['pres_tag'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_tag;
+
+      // get pres location label
+      @$result['result'][$i]['pres_location_label'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_context->pres_placeLabel;
+
+      // get pres coordinates
+      @$result['result'][$i]['pres_coordinates'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->georss_where->gml_Point->gml_coordinates;
+
+      // get pres org
+      @$result['result'][$i]['pres_org'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_organization;
+
+      // get pres org short
+      @$result['result'][$i]['pres_org_short'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_organizationShort;
+
+      // get pres data quality
+      @$result['result'][$i]['pres_data_quality'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_dataQuality;
+
+
+      $i++;
+    }
+
+    return $result;
   }
 
   public function relations($objectid) {
@@ -67,14 +140,12 @@ class KSamsok {
     // check if URL does return a error and kill the script if it does
     $this->validxml($urlquery);
 
-    $relations = array();
     // get the XML
     $xml = file_get_contents($urlquery);
     $xml = new SimpleXMLElement($xml);
 
-    // process the xml to array
     // get number of relations
-    $relations['count'] = $xml->relations['count'];
+    $relations['count'] = (string) $xml->relations['count'];
 
     // foreach loop for all relations
     $i = 0;
@@ -82,7 +153,7 @@ class KSamsok {
       // get the innerXML
       $relations[$i]['link'] = (string) $relation;
       // get the type attribute
-      $relations[$i]['type'] = $relation['type'];
+      $relations[$i]['type'] = (string) $relation['type'];
 
       $i++;
     }
@@ -101,7 +172,6 @@ class KSamsok {
     // check if URL does return a error and kill the script if it does
     $this->validxml($urlquery);
 
-    $terms = array();
     // get the XML
     $xml = file_get_contents($urlquery);
     $xml = new SimpleXMLElement($xml);
@@ -109,8 +179,8 @@ class KSamsok {
     // process the xml to array
     $i = 0;
     foreach ($xml->terms->term as $term) {
-      $terms[$i]['value'] = $term->value;
-      $terms[$i]['count'] = $term->count;
+      $terms[$i]['value'] = (string) $term->value;
+      $terms[$i]['count'] = (string) $term->count;
       $i++;
     }
 
