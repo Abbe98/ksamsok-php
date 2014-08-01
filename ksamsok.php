@@ -50,8 +50,6 @@ class KSamsok {
 
     // check if URL does return a error and kill the script if it does
     $this->validxml($urlquery);
-    
-    $result = array();
 
     // get the XML
     $xml = file_get_contents($urlquery);
@@ -68,7 +66,6 @@ class KSamsok {
     $xml = str_replace('ns6:', 'ns6_', $xml);
 
     $xml = new SimpleXMLElement($xml);
-    print_r($xml);
 
     // get number of total hits
     $result['hits'] = (string) $xml->totalHits;
@@ -130,7 +127,22 @@ class KSamsok {
       // get pres data quality
       @$result['result'][$i]['pres_data_quality'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_dataQuality;
 
-      #add pres:image and containing tags
+      // get image in diffrent quality
+      @$result['result'][$i]['pres_image']['thumbnail'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_src[0];
+      @$result['result'][$i]['pres_image']['lowres'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_src[1];
+      @$result['result'][$i]['pres_image']['highres'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_src[2];
+
+      // get image "by line"
+      @$result['result'][$i]['pres_image']['by_line'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_byline;
+
+      // get image copyright holder
+      @$result['result'][$i]['pres_image']['copyright'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_copyright;
+
+      // get image license
+      @$result['result'][$i]['pres_image']['license'] = (string) $record->RDF_RDF->Image->mediaLicense->attributes()->RDF_resource;
+
+      // get image photographer
+      @$result['result'][$i]['pres_image']['photographer'] = (string) $record->RDF_RDF->Context->foaf_name;
 
 
       $i++;
