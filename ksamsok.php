@@ -107,9 +107,13 @@ class KSamsok {
       // get pres item label
       @$result['result'][$i]['pres_item_label'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_itemLabel;
 
-      # this should be a foreach() loop
-      // get pres tag
-      @$result['result'][$i]['pres_tag'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_tag;
+      // loop through presentation tags and store them in array
+      $j = 0;
+      foreach ($record->RDF_RDF->Entity->presentation->pres_item->pres_tag as $pres_tag) {
+        @$result['result'][$i]['pres-tags'][$j] = (string) $pres_tag;
+
+        $j++;
+      }
 
       // get pres location label
       @$result['result'][$i]['pres_location_label'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_context->pres_placeLabel;
@@ -125,6 +129,8 @@ class KSamsok {
 
       // get pres data quality
       @$result['result'][$i]['pres_data_quality'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_dataQuality;
+
+      #add pres:image and containing tags
 
 
       $i++;
