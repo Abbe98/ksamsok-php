@@ -29,6 +29,110 @@ class KSamsok {
     }
   }
 
+  private function parse_record($record) {
+    // wrapp it in a try() block so we can throw Exceptions
+    try {
+      // parse Entity content if Entity exists
+      if (isset($record->RDF_RDF->Entity)) {
+        // get current object
+        @$result_record['meta']['object'] = (string) $record->RDF_RDF->Entity->attributes()->RDF_about;
+
+        // get service organization
+        @$result_record['meta']['org'] = (string) $record->RDF_RDF->Entity->serviceOrganization;
+
+        // get url
+        @$result_record['meta']['url'] = (string) $record->RDF_RDF->Entity->url;
+
+        // get subject(RDF)
+        @$result_record['meta']['subject'] = (string) $record->RDF_RDF->Entity->subject->attributes()->RDF_resource;
+
+        // get media type
+        @$result_record['meta']['mediaType'] = (string) $record->RDF_RDF->Entity->mediaType;
+
+        // use a shortcut $variable for presentation tags
+        $pres = $record->RDF_RDF->Entity->presentation->pres_item;
+
+        @$result_record['presentation']['version'] = (string) $pres->pres_version;
+        @$result_record['presentation']['uri'] = (string) $pres->pres_entityUri;
+        @$result_record['presentation']['type'] = (string) $pres->pres_type;
+        @$result_record['presentation']['id'] = (string) $pres->pres_id;
+        @$result_record['presentation']['id_label'] = (string) $pres->pres_idLabel;
+        @$result_record['presentation']['item_label'] = (string) $pres->pres_itemLabel;
+
+        // loop through presentation tags and store them in array
+        $i = 0;
+        foreach ($pres->pres_tag as $pres_tag) {
+          @$result_record['presentation']['pres_tags'][$i] = (string) $pres_tag;
+          $i++;
+        }
+
+        @$result_record['presentation']['description'] = (string) $pres->pres_description;
+        @$result_record['presentation']['content'] = (string) $pres->pres_content;
+
+        // loop through presentation contexts and store child nodes
+        $i = 0;
+        foreach ($pres->pres_context as $pres_context) {
+          @$result_record['presentation']['contexts'][$i]['event'] = (string) $pres_context->pres_event;
+          @$result_record['presentation']['contexts'][$i]['place_label'] = (string) $pres_context->pres_placeLabel;
+          @$result_record['presentation']['contexts'][$i]['time_label'] = (string) $pres_context->pres_timeLabel;
+          @$result_record['presentation']['contexts'][$i]['name_label'] = (string) $pres_context->pres_nameLabel;
+          $i++;
+        }
+
+        $result_record['presentation']['coordinates'] = (string) $pres->georss_where->gml_Point->gml_coordinates;
+
+        // loop for all the images and their child nodes
+        $i = 0;
+        foreach ($pres->pres_image as $image) {
+          @$result_record['presentation']['images'][$i]['thumbnail'] = (string) $image->pres_src[0];
+          @$result_record['presentation']['images'][$i]['lowres'] = (string) $image->pres_src[1];
+          @$result_record['presentation']['images'][$i]['highres'] = (string) $image->pres_src[2];
+          @$result_record['presentation']['images'][$i]['by_line'] = (string) $image->pres_byline;
+          @$result_record['presentation']['images'][$i]['motive'] = (string) $image->pres_motive;
+          @$result_record['presentation']['images'][$i]['copyright'] = (string) $image->pres_copyright;
+          @$result_record['presentation']['images'][$i]['license'] = (string) $image->pres_mediaLicense;
+          @$result_record['presentation']['images'][$i]['license_url'] = (string) $image->pres_mediaLicenseUrl;
+          @$result_record['presentation']['images'][$i]['uri'] = (string) $image->pres_mediaUri;
+          @$result_record['presentation']['images'][$i]['html_url'] = (string) $image->pres_mediaUrl;
+          $i++;
+        }
+
+        // loop to get all references
+        $i = 0;
+        foreach ($pres->pres_references->pres_reference as $reference) {
+          @$result_record['presentation']['references'][$i] = (string) $reference;
+          $i++;
+        }
+
+        // loop to determine representation format(they come in no specific order...)
+        foreach ($pres->pres_representations->pres_representation as $representation) {
+          if(strpos($representation, 'html')) {
+            @$result_record['presentation']['representation']['html'] = (string) $representation;
+          } elseif(strpos($representation, 'xml')) {
+            @$result_record['presentation']['representation']['presentation'] = (string) $representation;
+          } elseif(strpos($representation, 'rdf')) {
+            @$result_record['presentation']['representation']['rdf'] = (string) $representation;
+          }
+        }
+
+
+        // Parse rdf_Description content only if no Entity node exists
+      } elseif (isset($record->RDF_RDF->rdf_Description)) {
+        
+      } else {
+        // If both Entity and rdf_Description does not exist throw a fatal error
+        throw new Exception('Unknown RDF format.');
+      }
+    } catch(Exception $e) {
+      echo 'Caught Exception: ',  $e->getMessage(), "\n";
+      // fatal error so die
+      die();
+    }
+    
+
+    return $result_record;
+  }
+
   public function search($text, $start, $hits) {
     try {
       // check if $hits(hitsPerPage) is valid(1-500)
@@ -70,85 +174,60 @@ class KSamsok {
     // get number of total hits
     $result['hits'] = (string) $xml->totalHits;
 
-    $i = 0;
     foreach ($xml->records->record as $record) {
+
+      $result[] = $this->parse_record($record);
+
       //@ignore and just leave array values empty if they don't exists
-
-      // get current object
-      @$result['result'][$i]['object'] = (string) $record->RDF_RDF->Entity->attributes()->RDF_about;
-
-      // get service organization
-      @$result['result'][$i]['org'] = (string) $record->RDF_RDF->Entity->serviceOrganization;
-
-      // get url
-      @$result['result'][$i]['url'] = (string) $record->RDF_RDF->Entity->url;
-
-      // get subject(RDF)
-      @$result['result'][$i]['subject'] = (string) $record->RDF_RDF->Entity->subject->attributes()->RDF_resource;
-
-      // get media type
-      @$result['result'][$i]['mediaType'] = (string) $record->RDF_RDF->Entity->mediaType;
-
-      // get licence
-      @$result['result'][$i]['licence'] = (string) $record->RDF_RDF->Entity->itemLicenseUrl->attributes()->RDF_resource;
-
-      // get title
-      @$result['result'][$i]['title'] = (string) $record->RDF_RDF->Entity->itemLabel;
-
-      // get type
-      @$result['result'][$i]['pres_type'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_type;
-
-      // get pres id
-      @$result['result'][$i]['pres_id'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_id;
-
-      // get pres item label
-      @$result['result'][$i]['pres_item_label'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_itemLabel;
-
-      // loop through presentation tags and store them in array
-      $j = 0;
-      foreach ($record->RDF_RDF->Entity->presentation->pres_item->pres_tag as $pres_tag) {
-        @$result['result'][$i]['pres-tags'][$j] = (string) $pres_tag;
-
-        $j++;
-      }
-
-      // get pres location label
-      @$result['result'][$i]['pres_location_label'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_context->pres_placeLabel;
-
-      // get pres coordinates
-      @$result['result'][$i]['pres_coordinates'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->georss_where->gml_Point->gml_coordinates;
-
-      // get pres org
-      @$result['result'][$i]['pres_org'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_organization;
-
-      // get pres org short
-      @$result['result'][$i]['pres_org_short'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_organizationShort;
-
-      // get pres data quality
-      @$result['result'][$i]['pres_data_quality'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_dataQuality;
-
-      // get image in diffrent quality
-      @$result['result'][$i]['pres_image']['thumbnail'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_src[0];
-      @$result['result'][$i]['pres_image']['lowres'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_src[1];
-      @$result['result'][$i]['pres_image']['highres'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_src[2];
-
-      // get image "by line"
-      @$result['result'][$i]['pres_image']['by_line'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_byline;
-
-      // get image copyright holder
-      @$result['result'][$i]['pres_image']['copyright'] = (string) $record->RDF_RDF->Entity->presentation->pres_item->pres_image->pres_copyright;
-
-      // get image license
-      @$result['result'][$i]['pres_image']['license'] = (string) $record->RDF_RDF->Image->mediaLicense->attributes()->RDF_resource;
-
-      // get image photographer
-      @$result['result'][$i]['pres_image']['photographer'] = (string) $record->RDF_RDF->Context->foaf_name;
-
-
-      $i++;
     }
 
     return $result;
+  }
+
+  public function geo_search($coordinates) {
+    
+    // expolde() each coordinate to get lang/lat separately
+    foreach ($coordinates as $coordinate) {
+      $longlat_array[] = explode(',', $coordinate);
+    }
+
+    // push lat/long to separately arrays($longlat_array was multidimensional) for future calculation
+    $i = 0;
+    foreach ($longlat_array as $longlat) {
+      $lat[] = $longlat[1];
+      $long[] = $longlat[0];
+      $i++;
+    }
+
+    // get search area borders for K-Samsök
+    $west = min($long);
+    $south = min($lat);
+    $east = max($long);
+    $north = max($lat);
+
+    // construct request URL
+    $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"';
+
+    // check if URL does return a error and kill the script if it does
+    $this->validxml($urlquery);
+
+    // get the XML
+    $xml = file_get_contents($urlquery);
+
+    // instead of using XPath to parse RDF just by pass it
+    $xml = str_replace('rdf:', 'RDF_', $xml);
+    $xml = str_replace('pres:', 'pres_', $xml);
+    $xml = str_replace('georss:', 'georss_', $xml);
+    $xml = str_replace('gml:', 'gml_', $xml);
+    $xml = str_replace('geoF:', 'geoF_', $xml);
+    $xml = str_replace('foaf:', 'foaf_', $xml);
+    $xml = str_replace('rel:', 'rel_', $xml);
+    $xml = str_replace('ns5:', 'ns5_', $xml);
+    $xml = str_replace('ns6:', 'ns6_', $xml);
+
+    $xml = new SimpleXMLElement($xml);
+
+    return $longlat_array;
   }
 
   public function relations($objectid) {
