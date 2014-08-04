@@ -34,20 +34,6 @@ class KSamsok {
     try {
       // parse Entity content if Entity exists
       if (isset($record->RDF_RDF->Entity)) {
-        // get current object
-        @$result_record['meta']['object'] = (string) $record->RDF_RDF->Entity->attributes()->RDF_about;
-
-        // get service organization
-        @$result_record['meta']['org'] = (string) $record->RDF_RDF->Entity->serviceOrganization;
-
-        // get url
-        @$result_record['meta']['url'] = (string) $record->RDF_RDF->Entity->url;
-
-        // get subject(RDF)
-        @$result_record['meta']['subject'] = (string) $record->RDF_RDF->Entity->subject->attributes()->RDF_resource;
-
-        // get media type
-        @$result_record['meta']['mediaType'] = (string) $record->RDF_RDF->Entity->mediaType;
 
         // use a shortcut $variable for presentation tags
         $pres = $record->RDF_RDF->Entity->presentation->pres_item;
@@ -59,66 +45,153 @@ class KSamsok {
         @$result_record['presentation']['id_label'] = (string) $pres->pres_idLabel;
         @$result_record['presentation']['item_label'] = (string) $pres->pres_itemLabel;
 
-        // loop through presentation tags and store them in array
-        $i = 0;
-        foreach ($pres->pres_tag as $pres_tag) {
-          @$result_record['presentation']['pres_tags'][$i] = (string) $pres_tag;
-          $i++;
+        // loop through presentation tags and store them in array only if at least one isset()
+        if (isset($pres->pres_tag) === true) {
+          $i = 0;
+          foreach ($pres->pres_tag as $pres_tag) {
+            @$result_record['presentation']['pres_tags'][$i] = (string) $pres_tag;
+            $i++;
+          }
         }
 
         @$result_record['presentation']['description'] = (string) $pres->pres_description;
         @$result_record['presentation']['content'] = (string) $pres->pres_content;
 
-        // loop through presentation contexts and store child nodes
-        $i = 0;
-        foreach ($pres->pres_context as $pres_context) {
-          @$result_record['presentation']['contexts'][$i]['event'] = (string) $pres_context->pres_event;
-          @$result_record['presentation']['contexts'][$i]['place_label'] = (string) $pres_context->pres_placeLabel;
-          @$result_record['presentation']['contexts'][$i]['time_label'] = (string) $pres_context->pres_timeLabel;
-          @$result_record['presentation']['contexts'][$i]['name_label'] = (string) $pres_context->pres_nameLabel;
-          $i++;
-        }
-
-        $result_record['presentation']['coordinates'] = (string) $pres->georss_where->gml_Point->gml_coordinates;
-
-        // loop for all the images and their child nodes
-        $i = 0;
-        foreach ($pres->pres_image as $image) {
-          @$result_record['presentation']['images'][$i]['thumbnail'] = (string) $image->pres_src[0];
-          @$result_record['presentation']['images'][$i]['lowres'] = (string) $image->pres_src[1];
-          @$result_record['presentation']['images'][$i]['highres'] = (string) $image->pres_src[2];
-          @$result_record['presentation']['images'][$i]['by_line'] = (string) $image->pres_byline;
-          @$result_record['presentation']['images'][$i]['motive'] = (string) $image->pres_motive;
-          @$result_record['presentation']['images'][$i]['copyright'] = (string) $image->pres_copyright;
-          @$result_record['presentation']['images'][$i]['license'] = (string) $image->pres_mediaLicense;
-          @$result_record['presentation']['images'][$i]['license_url'] = (string) $image->pres_mediaLicenseUrl;
-          @$result_record['presentation']['images'][$i]['uri'] = (string) $image->pres_mediaUri;
-          @$result_record['presentation']['images'][$i]['html_url'] = (string) $image->pres_mediaUrl;
-          $i++;
-        }
-
-        // loop to get all references
-        $i = 0;
-        foreach ($pres->pres_references->pres_reference as $reference) {
-          @$result_record['presentation']['references'][$i] = (string) $reference;
-          $i++;
-        }
-
-        // loop to determine representation format(they come in no specific order...)
-        foreach ($pres->pres_representations->pres_representation as $representation) {
-          if(strpos($representation, 'html')) {
-            @$result_record['presentation']['representation']['html'] = (string) $representation;
-          } elseif(strpos($representation, 'xml')) {
-            @$result_record['presentation']['representation']['presentation'] = (string) $representation;
-          } elseif(strpos($representation, 'rdf')) {
-            @$result_record['presentation']['representation']['rdf'] = (string) $representation;
+        // loop through presentation contexts and store child nodes only if at least one isset()
+        if (isset($pres->pres_context) === true) {
+          $i = 0;
+          foreach ($pres->pres_context as $pres_context) {
+            @$result_record['presentation']['contexts'][$i]['event'] = (string) $pres_context->pres_event;
+            @$result_record['presentation']['contexts'][$i]['place_label'] = (string) $pres_context->pres_placeLabel;
+            @$result_record['presentation']['contexts'][$i]['time_label'] = (string) $pres_context->pres_timeLabel;
+            @$result_record['presentation']['contexts'][$i]['name_label'] = (string) $pres_context->pres_nameLabel;
+            $i++;
           }
         }
 
+        @$result_record['presentation']['coordinates'] = (string) $pres->georss_where->gml_Point->gml_coordinates;
+
+        // loop for all the images and their child nodes only if at least one isset()
+        if (isset($pres->pres_image) === true) {
+          $i = 0;
+          foreach ($pres->pres_image as $image) {
+            @$result_record['presentation']['images'][$i]['thumbnail'] = (string) $image->pres_src[0];
+            @$result_record['presentation']['images'][$i]['lowres'] = (string) $image->pres_src[1];
+            @$result_record['presentation']['images'][$i]['highres'] = (string) $image->pres_src[2];
+            @$result_record['presentation']['images'][$i]['by_line'] = (string) $image->pres_byline;
+            @$result_record['presentation']['images'][$i]['motive'] = (string) $image->pres_motive;
+            @$result_record['presentation']['images'][$i]['copyright'] = (string) $image->pres_copyright;
+            @$result_record['presentation']['images'][$i]['license'] = (string) $image->pres_mediaLicense;
+            @$result_record['presentation']['images'][$i]['license_url'] = (string) $image->pres_mediaLicenseUrl;
+            @$result_record['presentation']['images'][$i]['uri'] = (string) $image->pres_mediaUri;
+            @$result_record['presentation']['images'][$i]['html_url'] = (string) $image->pres_mediaUrl;
+            $i++;
+          }
+        }
+
+        // loop to get all references only if at least one isset()
+        if(isset($pres->pres_references->pres_reference) == true) {
+          $i = 0;
+          foreach ($pres->pres_references->pres_reference as $reference) {
+            @$result_record['presentation']['references'][$i] = (string) $reference;
+            $i++;
+          }
+        }
+
+        // sometimes the presentation model is broken so we need to use isset() for representations too
+        if (isset($pres->pres_representations->pres_representation) === true) {
+          // loop to determine representation format(they come in no specific order...)
+          foreach ($pres->pres_representations->pres_representation as $representation) {
+            if(strpos($representation, 'html')) {
+              @$result_record['presentation']['representation']['html'] = (string) $representation;
+            } elseif(strpos($representation, 'xml')) {
+              @$result_record['presentation']['representation']['presentation'] = (string) $representation;
+            } elseif(strpos($representation, 'rdf')) {
+              @$result_record['presentation']['representation']['rdf'] = (string) $representation;
+            }
+          }
+        }
 
         // Parse rdf_Description content only if no Entity node exists
       } elseif (isset($record->RDF_RDF->rdf_Description)) {
-        
+
+        // use a shortcut $variable for presentation tags
+        $pres = $record->RDF_RDF->rdf_Description->ns5_presentationpresentation->pres_item;
+
+        @$result_record['presentation']['version'] = (string) $pres->pres_version;
+        @$result_record['presentation']['uri'] = (string) $pres->pres_entityUri;
+        @$result_record['presentation']['type'] = (string) $pres->pres_type;
+        @$result_record['presentation']['id'] = (string) $pres->pres_id;
+        @$result_record['presentation']['id_label'] = (string) $pres->pres_idLabel;
+        @$result_record['presentation']['item_label'] = (string) $pres->pres_itemLabel;
+
+        // loop through presentation tags and store them in array only if at least one isset()
+        if (isset($pres->pres_tag) === true) {
+          $i = 0;
+          foreach ($pres->pres_tag as $pres_tag) {
+            @$result_record['presentation']['pres_tags'][$i] = (string) $pres_tag;
+            $i++;
+          }
+        }
+
+        @$result_record['presentation']['description'] = (string) $pres->pres_description;
+        @$result_record['presentation']['content'] = (string) $pres->pres_content;
+
+        // loop through presentation contexts and store child nodes only if at least one isset()
+        if (isset($pres->pres_context) === true) {
+          $i = 0;
+          foreach ($pres->pres_context as $pres_context) {
+            @$result_record['presentation']['contexts'][$i]['event'] = (string) $pres_context->pres_event;
+            @$result_record['presentation']['contexts'][$i]['place_label'] = (string) $pres_context->pres_placeLabel;
+            @$result_record['presentation']['contexts'][$i]['time_label'] = (string) $pres_context->pres_timeLabel;
+            @$result_record['presentation']['contexts'][$i]['name_label'] = (string) $pres_context->pres_nameLabel;
+            $i++;
+          }
+        }
+
+        @$result_record['presentation']['coordinates'] = (string) $pres->georss_where->gml_Point->gml_coordinates;
+
+        // loop for all the images and their child nodes only if at least one isset()
+        if (isset($pres->pres_image) === true) {
+          $i = 0;
+          foreach ($pres->pres_image as $image) {
+            @$result_record['presentation']['images'][$i]['thumbnail'] = (string) $image->pres_src[0];
+            @$result_record['presentation']['images'][$i]['lowres'] = (string) $image->pres_src[1];
+            @$result_record['presentation']['images'][$i]['highres'] = (string) $image->pres_src[2];
+            @$result_record['presentation']['images'][$i]['by_line'] = (string) $image->pres_byline;
+            @$result_record['presentation']['images'][$i]['motive'] = (string) $image->pres_motive;
+            @$result_record['presentation']['images'][$i]['copyright'] = (string) $image->pres_copyright;
+            @$result_record['presentation']['images'][$i]['license'] = (string) $image->pres_mediaLicense;
+            @$result_record['presentation']['images'][$i]['license_url'] = (string) $image->pres_mediaLicenseUrl;
+            @$result_record['presentation']['images'][$i]['uri'] = (string) $image->pres_mediaUri;
+            @$result_record['presentation']['images'][$i]['html_url'] = (string) $image->pres_mediaUrl;
+            $i++;
+          }
+        }
+
+        // loop to get all references only if at least one isset()
+        if(isset($pres->pres_references->pres_reference) == true) {
+          $i = 0;
+          foreach ($pres->pres_references->pres_reference as $reference) {
+            @$result_record['presentation']['references'][$i] = (string) $reference;
+            $i++;
+          }
+        }
+
+        // sometimes the presentation model is broken so we need to use isset() for representations too
+        if (isset($pres->pres_representations->pres_representation) === true) {
+          // loop to determine representation format(they come in no specific order...)
+          foreach ($pres->pres_representations->pres_representation as $representation) {
+            if(strpos($representation, 'html')) {
+              @$result_record['presentation']['representation']['html'] = (string) $representation;
+            } elseif(strpos($representation, 'xml')) {
+              @$result_record['presentation']['representation']['presentation'] = (string) $representation;
+            } elseif(strpos($representation, 'rdf')) {
+              @$result_record['presentation']['representation']['rdf'] = (string) $representation;
+            }
+          }
+        }
+
       } else {
         // If both Entity and rdf_Description does not exist throw a fatal error
         throw new Exception('Unknown RDF format.');
@@ -147,8 +220,10 @@ class KSamsok {
 
     // create the request URL
     $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"';
+
     // replace spaces in url
     $urlquery = preg_replace('/\\s/', '%20', $urlquery);
+
     // Force UTF-8
     $urlquery = utf8_decode($urlquery);
 
