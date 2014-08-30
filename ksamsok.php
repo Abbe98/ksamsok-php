@@ -30,6 +30,8 @@ class KSamsok {
   }
 
   private function parse_record($record) {
+    // @ignore and just leave array values empty if they don't exists
+
     // wrapp it in a try() block so we can throw Exceptions
     try {
       // parse Entity content if Entity exists
@@ -113,10 +115,10 @@ class KSamsok {
         }
 
         // Parse rdf_Description content only if no Entity node exists
-      } elseif (isset($record->RDF_RDF->rdf_Description)) {
+      } elseif (isset($record->RDF_RDF->RDF_Description)) {
 
         // use a shortcut $variable for presentation tags
-        $pres = $record->RDF_RDF->rdf_Description->ns5_presentationpresentation->pres_item;
+        $pres = $record->RDF_RDF->RDF_Description->ns5_presentation->pres_item;
 
         @$result_record['presentation']['version'] = (string) $pres->pres_version;
         @$result_record['presentation']['uri'] = (string) $pres->pres_entityUri;
@@ -201,7 +203,6 @@ class KSamsok {
       // fatal error so die
       die();
     }
-    
 
     return $result_record;
   }
@@ -249,11 +250,9 @@ class KSamsok {
     // get number of total hits
     $result['hits'] = (string) $xml->totalHits;
 
+    // parse each record and puch to $result array
     foreach ($xml->records->record as $record) {
-
       $result[] = $this->parse_record($record);
-
-      //@ignore and just leave array values empty if they don't exists
     }
 
     return $result;
@@ -266,7 +265,7 @@ class KSamsok {
       $longlat_array[] = explode(',', $coordinate);
     }
 
-    // push lat/long to separately arrays($longlat_array was multidimensional) for future calculation
+    // push lat/long to separately arrays($longlat_array was a polygon) for future calculation
     $i = 0;
     foreach ($longlat_array as $longlat) {
       $lat[] = $longlat[1];
@@ -301,6 +300,13 @@ class KSamsok {
     $xml = str_replace('ns6:', 'ns6_', $xml);
 
     $xml = new SimpleXMLElement($xml);
+
+    // parse each record and puch to $result array
+    foreach ($xml->records->record as $record) {
+      $result[] = $this->parse_record($record);
+    }
+
+    #TODO: check which records that's inside the inputed polygon
 
     return $longlat_array;
   }
