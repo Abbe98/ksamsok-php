@@ -349,7 +349,7 @@ class KSamsok {
     return $relations;
   }
 
-  public function searchhelp($string) {
+  public function search_help($string) {
     // create the request URL
     $urlquery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=5';
     // replace spaces in url
