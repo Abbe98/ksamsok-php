@@ -9,11 +9,11 @@ class KSamsok {
     // checks if API Key or request URL is bad(can also )
     // check if URL does return a error
     $testquery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"';
-    $this->validxml($testquery);
+    $this->valid_xml($testquery);
   }
 
   // Checks if valid xml is returned, if not throw Exception and kill the script
-  private function validxml($url) {
+  private function valid_xml($url) {
     try {
       // @ignore warning, it's handled below
       @$xml = file_get_contents($url);
@@ -233,7 +233,7 @@ class KSamsok {
     $urlquery = utf8_decode($urlquery);
 
     // check if URL does return a error and kill the script if it does
-    $this->validxml($urlquery);
+    $this->valid_xml($urlquery);
 
     // get the XML
     $xml = file_get_contents($urlquery);
@@ -287,7 +287,7 @@ class KSamsok {
     $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"';
 
     // check if URL does return a error and kill the script if it does
-    $this->validxml($urlquery);
+    $this->valid_xml($urlquery);
 
     // get the XML
     $xml = file_get_contents($urlquery);
@@ -326,7 +326,7 @@ class KSamsok {
     $urlquery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectid;
 
     // check if URL does return a error and kill the script if it does
-    $this->validxml($urlquery);
+    $this->valid_xml($urlquery);
 
     // get the XML
     $xml = file_get_contents($urlquery);
@@ -358,7 +358,7 @@ class KSamsok {
     $urlquery = utf8_decode($urlquery);
 
     // check if URL does return a error and kill the script if it does
-    $this->validxml($urlquery);
+    $this->valid_xml($urlquery);
 
     // get the XML
     $xml = file_get_contents($urlquery);
