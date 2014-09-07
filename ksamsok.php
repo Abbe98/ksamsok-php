@@ -207,6 +207,10 @@ class KSamsok {
     return $result_record;
   }
 
+  private function point_in_polygon($point, $polygon) {
+    #TODO: finish this function
+  }
+
   public function search($text, $start, $hits) {
     try {
       // check if $hits(hitsPerPage) is valid(1-500)
@@ -306,9 +310,15 @@ class KSamsok {
       $result[] = $this->parse_record($record);
     }
 
-    #TODO: check which records that's inside the inputed polygon
+    // loop throug all $record coordinates
+    foreach ($result as $record) {
+      // if point_in_polygon() returns true add to $new_result[], if not do nothing
+      if($this->point_in_polygon($record['presentation']['coordinates'], $longlat_array)) {
+        $new_result[] = $record;
+      }
+    }
 
-    return $longlat_array;
+    return $new_result;
   }
 
   public function relations($objectid) {
