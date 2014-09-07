@@ -15,15 +15,19 @@ Things to do before "finished":
 ##Usage
 
 Set API-key(`test` works for development):
+
 `$ksamsok = new KSamsok('test');`
 
 Do a regular search for "Fiskmås", starting on result one returning 60 results:
+
 `$result = $ksamsok->search('Fiskmås', 1, 60);`
 
 Get all relations for `raa/fmi/10028201230001`:
+
 `$ksamsok->relations('raa/fmi/10028201230001');`
 
 Get search suggestions for the letters `kå`:
+
 `$ksamsok->search_help('kå');`
 
 Search for results in polygon:
@@ -35,6 +39,10 @@ Search for results in polygon:
                     '16.410484313964844,59.073764436047114',
                     '16.413745880126953,59.070786792947565',
                     '16.41958236694336,59.07164702748369');
-$ksamsok->geo_search($polygon);
+    $ksamsok->geo_search($polygon);
+
+The geo_serach function above visualized:
+
+![The geo_serach function above visualized on map.](https://raw.githubusercontent.com/Abbe98/ksamsok-php/master/point_in_polygon_map.png)
 
 [0]: http://www.ksamsok.se/in-english/
