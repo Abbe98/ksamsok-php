@@ -207,6 +207,36 @@ class KSamsok {
     return $result_record;
   }
 
+  private function ksamsok_geo_tunnel($west, $south, $east, $north) {
+    // construct request URL
+    $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"';
+
+    // check if URL does return a error and kill the script if it does
+    $this->valid_xml($urlquery);
+
+    // get the XML
+    $xml = file_get_contents($urlquery);
+
+    // instead of using XPath to parse RDF just by pass it
+    $xml = str_replace('rdf:', 'RDF_', $xml);
+    $xml = str_replace('pres:', 'pres_', $xml);
+    $xml = str_replace('georss:', 'georss_', $xml);
+    $xml = str_replace('gml:', 'gml_', $xml);
+    $xml = str_replace('geoF:', 'geoF_', $xml);
+    $xml = str_replace('foaf:', 'foaf_', $xml);
+    $xml = str_replace('rel:', 'rel_', $xml);
+    $xml = str_replace('ns5:', 'ns5_', $xml);
+    $xml = str_replace('ns6:', 'ns6_', $xml);
+
+    $xml = new SimpleXMLElement($xml);
+
+    // parse each record and push to $result array
+    foreach ($xml->records->record as $record) {
+      $result[] = $this->parse_record($record);
+    }
+
+    return $result;
+  }
   private function point_in_polygon($point, $polygon) {
     #TODO: finish this function
   }
@@ -262,6 +292,11 @@ class KSamsok {
     return $result;
   }
 
+  public function basic_geo_search($west, $south, $east, $north) {
+    // just return the tunnel result
+    return $this->ksamsok_geo_tunnel($west, $south, $east, $north);
+  }
+
   public function geo_search($coordinates) {
     
     // expolde() each coordinate to get lang/lat separately
@@ -283,35 +318,8 @@ class KSamsok {
     $east = max($long);
     $north = max($lat);
 
-    // construct request URL
-    $urlquery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"';
-
-    // check if URL does return a error and kill the script if it does
-    $this->valid_xml($urlquery);
-
-    // get the XML
-    $xml = file_get_contents($urlquery);
-
-    // instead of using XPath to parse RDF just by pass it
-    $xml = str_replace('rdf:', 'RDF_', $xml);
-    $xml = str_replace('pres:', 'pres_', $xml);
-    $xml = str_replace('georss:', 'georss_', $xml);
-    $xml = str_replace('gml:', 'gml_', $xml);
-    $xml = str_replace('geoF:', 'geoF_', $xml);
-    $xml = str_replace('foaf:', 'foaf_', $xml);
-    $xml = str_replace('rel:', 'rel_', $xml);
-    $xml = str_replace('ns5:', 'ns5_', $xml);
-    $xml = str_replace('ns6:', 'ns6_', $xml);
-
-    $xml = new SimpleXMLElement($xml);
-
-    // parse each record and puch to $result array
-    foreach ($xml->records->record as $record) {
-      $result[] = $this->parse_record($record);
-    }
-
-    // loop throug all $record coordinates
-    foreach ($result as $record) {
+    // loop trough all $record returned from geo tunnel coordinates
+    foreach ($this->ksamsok_geo_tunnel($west, $south, $east, $north) as $record) {
       // if point_in_polygon() returns true add to $new_result[], if not do nothing
       if($this->point_in_polygon($record['presentation']['coordinates'], $longlat_array)) {
         $new_result[] = $record;

@@ -6,7 +6,6 @@ API library for the [K-Samsök API][0].
 Things to do before "finished":
  - Finish the `point_in_polygon()` function for `geo_serach()`.
  - Replace the hacky 200 line SimpleXML parse solution with a XPath one(and remove the related "hacks")
- - Add `basic_geo_search()` because `geo_serach()` is slower.
  - Add `geo_near($point, $radius)` because it will be great to have.
  - Add some advanced search function, the existing one is so basic.
  - Add to Composer.
@@ -20,7 +19,7 @@ Set API-key(`test` works for development):
 
 Do a regular search for "Fiskmås", starting on result one returning 60 results:
 
-`$result = $ksamsok->search('Fiskmås', 1, 60);`
+`$ksamsok->search('Fiskmås', 1, 60);`
 
 Get all relations for `raa/fmi/10028201230001`:
 
@@ -41,8 +40,17 @@ Search for results in polygon:
                     '16.41958236694336,59.07164702748369');
     $ksamsok->geo_search($polygon);
 
-The geo_serach function above visualized:
+The `geo_search()` function above visualized:
 
-![The geo_serach function above visualized on map.](https://raw.githubusercontent.com/Abbe98/ksamsok-php/master/point_in_polygon_map.png)
+![The geo_search function above visualized on map.](https://raw.githubusercontent.com/Abbe98/ksamsok-php/master/point_in_polygon_map.png)
+
+Search by bounding box(faster then `geo_search()`):
+    
+    $west = '16.410484313964844';
+    $south = '59.070786792947565';
+    $east = '16.41958236694336';
+    $north = '59.074624595969645';
+    $ksamsok->basic_geo_search($west, $south, $east, $north);
+
 
 [0]: http://www.ksamsok.se/in-english/
