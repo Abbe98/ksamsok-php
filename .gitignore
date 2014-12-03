@@ -219,3 +219,4 @@ pip-log.txt
 *.sublime-workspace
 index.php
 temp.php
+vendor/*

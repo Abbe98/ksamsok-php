@@ -1,0 +1,19 @@
+{
+  "name": "abbe98/ksamsok-php",
+  "description": "PHP library for the K-Samsök API.",
+  "keywords": ["ksamsok","API", "culture"],
+  "homepage": "https://github.com/Abbe98/Simple-PDO",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Albin Larsson",
+      "homepage": "http://abbe98.github.io/"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "files": ["src/kSamsok.php"]
+  }
+}
