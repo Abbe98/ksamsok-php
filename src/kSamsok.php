@@ -139,7 +139,7 @@ class kSamsok {
     return $resultRecord;
   }
 
-  public function search($text, $start, $hits) {
+  public function search($text, $start, $hits, $images = false) {
     try {
       // check if $hits(hitsPerPage) is valid(1-500)
       if($hits < 1 || $hits > 500) {
@@ -153,6 +153,10 @@ class kSamsok {
 
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"';
+    // if $images = ture add %20and%20thumbnailExists=j to url(&thumbnailExists=j broke it)
+    if ($images) {
+      $urlQuery = $urlQuery . '%20and%20thumbnailExists=j';
+    }
     // replace spaces in url
     $urlQuery = preg_replace('/\\s/', '%20', $urlQuery);
     // Force UTF-8
@@ -164,6 +168,7 @@ class kSamsok {
     // instead of using XPath to parse RDF just by pass it
     $xml = $this->hackRdf($xml);
     $xml = new SimpleXMLElement($xml);
+
     // get number of total hits
     $result['hits'] = (string) $xml->totalHits;
 

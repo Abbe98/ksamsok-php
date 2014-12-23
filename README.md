@@ -18,6 +18,10 @@ Do a regular search for "Fiskmås", starting on result one returning 60 results:
 
 `$ksamsok->search('Fiskmås', 1, 60);`
 
+Optional image parameter, if you only want to return results with images:
+
+`$ksamsok->search('Fiskmås', 1, 60, true);`
+
 Get all relations for `raa/fmi/10028201230001`:
 
 `$ksamsok->relations('raa/fmi/10028201230001');`
