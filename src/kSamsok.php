@@ -26,7 +26,7 @@ class kSamsok {
   }
   private function parseRecord($record) {
     // @ignore and just leave array values empty if they don't exists
-    // wrapp it in a try() block so we can throw Exceptions
+    // wrap it in a try() block so we can throw Exceptions
     try {
       // parse Entity content if Entity exists
       if (isset($record->RDF_RDF->Entity)) {
