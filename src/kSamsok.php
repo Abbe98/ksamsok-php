@@ -40,7 +40,12 @@ class kSamsok {
 
   private function parseRecord($record) {
     // use a shortcut $variable for presentation tags
-    $pres = $record->pres_item;
+    // if record is first xml tag parse it if not presentation is the first
+    if (!empty($record->pres_item)) {
+      $pres = $record->pres_item;
+    } else {
+      $pres = $record;
+    }
 
     // @ignore and just leave array values empty if they don't exists
     @$resultRecord['presentation']['version'] = (string) $pres->pres_version;
@@ -120,6 +125,45 @@ class kSamsok {
     return $resultRecord;
   }
 
+  private function idFormat($id, $format = 'raw') {
+    // $format can be string 'xml' or string 'raw'
+
+    // if is the entire url strip it off
+    if (stripos($id, 'http://kulturarvsdata.se/')) {
+      $id = str_replace('http://kulturarvsdata.se/', '', $id);
+    }
+
+    if ($format === 'raw') {
+      // if nor '/xml/' / '/rdf/' / '/html/' is found in $id
+      if (strpos($id,'/xml/') === false && strpos($id,'/rdf/') === false && strpos($id,'/html/') === false) {
+        return $id;
+      // if format exists in $id remove it
+      } elseif (strpos($id,'/rdf/') !== false) {
+        return str_replace('/rdf/', '', $id);
+      } elseif (strpos($id,'/html/') !== false) {
+        return str_replace('/html/', '', $id);
+      } elseif (strpos($id,'/xml/') !== false) {
+        return str_replace('/xml/', '', $id);
+      }
+    }
+
+    if ($format === 'xml') {
+      // if string contains '/xml/'
+      if (strpos($id,'/xml/') !== false) {
+        return $id;
+      // replace '/html/' / '/rdf/' if found
+      } elseif (strpos($id,'/rdf/') !== false) {
+        return str_replace('/rdf/', '/xml/', $id);
+      } elseif (strpos($id,'/html/') !== false) {
+        return str_replace('/html/', '/xml/', $id);
+      } else {
+        // if no format exists add '/xml/'
+        $formatLocation = strrpos($id, '/', 0);
+        return substr_replace($id, '/xml', $formatLocation, 0);
+      }
+    }
+  }
+
   public function search($text, $start, $hits, $images = false) {
     try {
       // check if $hits(hitsPerPage) is valid(1-500)
@@ -178,6 +222,22 @@ class kSamsok {
     }
 
     return $result;
+  }
+
+  public function object($objectId) {
+    // format inputed $objectId
+    $objectId = $this->idFormat($objectId, 'xml');
+    // create the request url(for object API key isn't required).
+    $urlQuery = 'http://kulturarvsdata.se/' . $objectId;
+    // check if URL does return a error and kill the script if it does
+    $this->validXml($urlQuery);
+    // get the XML
+    $xml = file_get_contents($urlQuery);
+    // bypass XML namespace
+    $xml = $this->killXmlNamespace($xml);
+    $xml = new SimpleXMLElement($xml);
+
+    return $this->parseRecord($xml);
   }
 
   public function relations($objectId) {
