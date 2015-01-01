@@ -7,7 +7,7 @@ class kSamsok {
     $this->key = $key;
     // checks if API Key or request URL is bad(can also )
     // check if URL does return a error
-    $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"';
+    $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
     $this->validXml($testQuery);
   }
 
@@ -27,39 +27,20 @@ class kSamsok {
     }
   }
 
-  private function hackRdf($xml) {
-    $xml = str_replace('rdf:', 'RDF_', $xml);
+  private function killXmlNamespace($xml) {
     $xml = str_replace('pres:', 'pres_', $xml);
     $xml = str_replace('georss:', 'georss_', $xml);
     $xml = str_replace('gml:', 'gml_', $xml);
     $xml = str_replace('geoF:', 'geoF_', $xml);
-    $xml = str_replace('foaf:', 'foaf_', $xml);
     $xml = str_replace('rel:', 'rel_', $xml);
-    $xml = str_replace('ns5:', 'ns5_', $xml);
-    $xml = str_replace('ns6:', 'ns6_', $xml);
+    $xml = str_replace('xmlns:', 'xmlns_', $xml);
+
     return $xml;
   }
 
   private function parseRecord($record) {
-    // wrap it in a try() block so we can throw Exceptions
-    try {
-      // parse Entity content if Entity exists
-      if (isset($record->RDF_RDF->Entity)) {
-        // use a shortcut $variable for presentation tags
-        $pres = $record->RDF_RDF->Entity->presentation->pres_item;
-        // Parse rdf_Description content only if no Entity node exists
-      } elseif (isset($record->RDF_RDF->RDF_Description)) {
-        // use a shortcut $variable for presentation tags
-        $pres = $record->RDF_RDF->RDF_Description->ns5_presentation->pres_item;
-      } else {
-        // If both Entity and rdf_Description does not exist throw a fatal error
-        throw new Exception('Unknown record setup.');
-      }
-    } catch(Exception $e) {
-      echo 'Caught Exception: ',  $e->getMessage(), "\n";
-      // fatal error so die
-      die();
-    }
+    // use a shortcut $variable for presentation tags
+    $pres = $record->pres_item;
 
     // @ignore and just leave array values empty if they don't exists
     @$resultRecord['presentation']['version'] = (string) $pres->pres_version;
@@ -152,10 +133,10 @@ class kSamsok {
     }
 
     // create the request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"';
-    // if $images = ture add %20and%20thumbnailExists=j to url(&thumbnailExists=j broke it)
+    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"&recordSchema=presentation';
+    // if $images = true add &thumbnailExists=j to url
     if ($images) {
-      $urlQuery = $urlQuery . '%20and%20thumbnailExists=j';
+      $urlQuery = $urlQuery . '&thumbnailExists=j';
     }
     // replace spaces in url
     $urlQuery = preg_replace('/\\s/', '%20', $urlQuery);
@@ -165,14 +146,14 @@ class kSamsok {
     $this->validXml($urlQuery);
     // get the XML
     $xml = file_get_contents($urlQuery);
-    // instead of using XPath to parse RDF just by pass it
-    $xml = $this->hackRdf($xml);
+    // bypass XML namespace
+    $xml = $this->killXmlNamespace($xml);
     $xml = new SimpleXMLElement($xml);
 
     // get number of total hits
     $result['hits'] = (string) $xml->totalHits;
 
-    // parse each record and puch to $result array
+    // parse each record and push to $result array
     foreach ($xml->records->record as $record) {
       $result[] = $this->parseRecord($record);
     }
@@ -182,13 +163,13 @@ class kSamsok {
 
   public function geoSearch($west, $south, $east, $north) {
     // construct request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"';
+    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
     // check if URL does return a error and kill the script if it does
     $this->validXml($urlQuery);
     // get the XML
     $xml = file_get_contents($urlQuery);
-    // instead of using XPath to parse RDF just by pass it
-    $xml = $this->hackRdf($xml);
+    // bypass XML namespace
+    $xml = $this->killXmlNamespace($xml);
     $xml = new SimpleXMLElement($xml);
 
     // parse each record and push to $result array
