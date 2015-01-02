@@ -129,7 +129,7 @@ class kSamsok {
     // $format can be string 'xml' or string 'raw'
 
     // if is the entire url strip it off
-    if (stripos($id, 'http://kulturarvsdata.se/')) {
+    if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
       $id = str_replace('http://kulturarvsdata.se/', '', $id);
     }
 
@@ -241,6 +241,8 @@ class kSamsok {
   }
 
   public function relations($objectId) {
+    // format inputed $objectId
+    $objectId = $this->idFormat($objectId);
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
     // check if URL does return a error and kill the script if it does
