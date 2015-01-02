@@ -12,7 +12,7 @@ class kSamsok {
   }
 
   // Checks if valid xml is returned, if not throw Exception and kill the script
-  private function validXml($url) {
+  protected function validXml($url) {
     try {
       // @ignore warning, it's handled below
       @$xml = file_get_contents($url);
@@ -27,7 +27,7 @@ class kSamsok {
     }
   }
 
-  private function killXmlNamespace($xml) {
+  protected function killXmlNamespace($xml) {
     $xml = str_replace('pres:', 'pres_', $xml);
     $xml = str_replace('georss:', 'georss_', $xml);
     $xml = str_replace('gml:', 'gml_', $xml);
@@ -38,7 +38,7 @@ class kSamsok {
     return $xml;
   }
 
-  private function parseRecord($record) {
+  protected function parseRecord($record) {
     // use a shortcut $variable for presentation tags
     // if record is first xml tag parse it if not presentation is the first
     if (!empty($record->pres_item)) {
@@ -125,7 +125,7 @@ class kSamsok {
     return $resultRecord;
   }
 
-  private function idFormat($id, $format = 'raw') {
+  protected function idFormat($id, $format = 'raw') {
     // $format can be string 'xml' or string 'raw'
 
     // if is the entire url strip it off
