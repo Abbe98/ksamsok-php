@@ -288,6 +288,11 @@ class kSamsok {
       $i++;
     }
 
-    return $terms;
+    // check if any results exists
+    if (isset($terms)) {
+      return $terms;
+    } else {
+      return false;
+    }
   }
 }
