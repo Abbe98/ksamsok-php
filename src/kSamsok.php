@@ -267,9 +267,9 @@ class kSamsok {
     return $relations;
   }
 
-  public function searchHint($string) {
+  public function searchHint($string, $count = '5') {
     // create the request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=5';
+    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
     // replace spaces in url
     $urlQuery = preg_replace('/\\s/', '%20', $urlQuery);
     // Force UTF-8
