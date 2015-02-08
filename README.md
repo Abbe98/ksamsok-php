@@ -36,7 +36,7 @@ Search by bounding box:
     $south = '59.070786792947565';
     $east = '16.41958236694336';
     $north = '59.074624595969645';
-    $ksamsok->geoSearch($west, $south, $east, $north);
+    $ksamsok->geoSearch($west, $south, $east, $north, 1);
 
 
 [0]: http://www.ksamsok.se/in-english/

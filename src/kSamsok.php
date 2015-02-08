@@ -210,9 +210,20 @@ class kSamsok {
     return $result;
   }
 
-  public function geoSearch($west, $south, $east, $north) {
+  public function geoSearch($west, $south, $east, $north, $start, $hits = '60') {
+    try {
+      // check if $hits(hitsPerPage) is valid(1-500)
+      if($hits < 1 || $hits > 500) {
+        throw new Exception($hits . ' is not number between 1-500.');
+      }
+    } catch(Exception $e) {
+      echo 'Caught Exception: ',  $e->getMessage(), "\n";
+      // this is a fatal error so kill the script
+      die();
+    }
+    
     // construct request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
+    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
     // check if URL does return a error and kill the script if it does
     $this->validXml($urlQuery);
     // get the XML
