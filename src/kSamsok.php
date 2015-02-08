@@ -221,7 +221,7 @@ class kSamsok {
       // this is a fatal error so kill the script
       die();
     }
-    
+
     // construct request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
     // check if URL does return a error and kill the script if it does
@@ -231,6 +231,8 @@ class kSamsok {
     // bypass XML namespace
     $xml = $this->killXmlNamespace($xml);
     $xml = new SimpleXMLElement($xml);
+
+    $result['hits'] = (string) $xml->totalHits;
 
     // parse each record and push to $result array
     foreach ($xml->records->record as $record) {
