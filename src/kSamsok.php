@@ -27,6 +27,13 @@ class kSamsok {
     }
   }
 
+  protected function prepareUrl($url) {
+    // replace withe space
+    $url = preg_replace('/\\s/', '%20', $url);
+    // Force UTF-8
+    return utf8_decode($url);
+  }
+
   protected function killXmlNamespace($xml) {
     $xml = str_replace('pres:', 'pres_', $xml);
     $xml = str_replace('georss:', 'georss_', $xml);
@@ -182,10 +189,8 @@ class kSamsok {
     if ($images) {
       $urlQuery = $urlQuery . '&thumbnailExists=j';
     }
-    // replace spaces in url
-    $urlQuery = preg_replace('/\\s/', '%20', $urlQuery);
-    // Force UTF-8
-    $urlQuery = utf8_decode($urlQuery);
+    // prepare url
+    $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and kill the script if it does
     $this->validXml($urlQuery);
     // get the XML
@@ -270,10 +275,8 @@ class kSamsok {
   public function searchHint($string, $count = '5') {
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
-    // replace spaces in url
-    $urlQuery = preg_replace('/\\s/', '%20', $urlQuery);
-    // Force UTF-8
-    $urlQuery = utf8_decode($urlQuery);
+    // prepare url
+    $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and kill the script if it does
     $this->validXml($urlQuery);
     // get the XML
