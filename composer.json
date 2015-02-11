@@ -2,7 +2,7 @@
   "name": "abbe98/ksamsok-php",
   "description": "PHP library for the K-Samsök API.",
   "keywords": ["ksamsok","API", "culture"],
-  "homepage": "https://github.com/Abbe98/Simple-PDO",
+  "homepage": "http://abbe98.github.io/ksamsok-php/",
   "license": "MIT",
   "authors": [
     {

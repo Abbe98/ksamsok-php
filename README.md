@@ -1,12 +1,7 @@
 #KSamsök-PHP
 API library for the [K-Samsök API][0].
 
-##Features:
-
- - Make a basic search request(`string`).
- - Get relations form any object.
- - Get search suggestions.
- - Search by geographical bounding box.
+Outdated README, see site for latest documentation.
 
 ##Usage
 
