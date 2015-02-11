@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>KSamsök-PHP</title>
+		
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<meta name="description" content="PHP library for the K-Samsök(SOCH) API." />
+		
+		<meta property="og:title" content="KSamsök-PHP" />
+		<meta property="og:description" content="PHP library for the K-Samsök(SOCH) API." />
+
+		<link href="css/style.css" rel="stylesheet" />
+		<link href="http://fonts.googleapis.com/css?family=Roboto:400,500|Raleway:800" rel="stylesheet" />
+	</head>
+	<body>
+		<nav>
+			<ul>
+				<li class="header">KSamsök-PHP</li>
+				<li><a href="#intro">Introduction</a></li>
+				<li><a href="#install">Install</a></li>
+				<li><a href="#usage">Usage</a></li>
+				<li class="header">Public Methods</li>
+				<li><a href="#search">Search</a></li>
+				<li><a href="#geo">Geo Search</a></li>
+				<li><a href="#hint">Search Hint</a></li>
+				<li><a href="#relations">Relations</a></li>
+				<li><a href="#object">Object</a></li>
+				<li class="header">Advanced Usage</li>
+				<li><a href="#extending">Extending</a></li>
+				<li><a href="#validxml">validXml()</a></li>
+				<li><a href="#prepareurl">prepareUrl()</a></li>
+				<li><a href="#killxmlnamespace">killXmlNamespace()</a></li>
+				<li><a href="#idformat">idFormat()</a></li>
+				<li><a href="#parserecord">parseRecord()</a></li>
+			</ul>
+		</nav>
+		<main>
+			<h1>KSamsök-PHP</h1>
+
+			<p class="infobox">Looking for the <a href="http://www.ksamsok.se/in-english/">official K-Samsök(SOCH) API documentation</a>?</p>
+			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.5.0">version 0.5.0</a></p>
+
+			<h3 id="intro">Introduction</h3>
+
+			<p>KSamsök-PHP is a PHP library for the <a href="http://www.ksamsok.se/in-english/"> K-Samsök(SOCH) API</a>. The K-Samsök aggregator has over 5.6 million cultural objects indexed from various sources.</p>
+
+			<p>KSamsök-PHP is licensed under <a href="https://github.com/Abbe98/ksamsok-php/blob/master/LICENSE">MIT</a> and you can contribute to the project through <a href="https://github.com/Abbe98/ksamsok-php">Github</a>.</p>
+
+			<h3 id="install">Install</h3>
+			<strong>Composer:</strong>
+			<p>Simply run the following in your project root:<p>
+			<pre>
+				<span>composer require abbe98/ksamsok-php</span>
+			</pre>
+			<strong>PHP require()</strong>
+			<p>If you are not able to use Composer you can simply require the file <a href="https://github.com/Abbe98/ksamsok-php/blob/master/src/kSamsok.php"><code>kSamsok.php</code></a>.</p>
+
+			<h3 id="usage">Usage</h3>
+			<p>The API requires a API key that you can obtain by contacting the Swedish National Heritage Board for development you can use the key <code>test</code>.</p>
+
+			<p>Create a new instance of the <code>KSamsok</code> class and include your API key.</p>
+			<pre>
+				<span>$kSamsok = new KSamsok('test');</span>
+			</pre>
+
+			<h2>Public Methods</h2>
+
+			<h3 id="search">Search</h3>
+
+			<p>The basic <code>search()</code> method has a total of four parameters:</p>
+			<ul>
+				<li><code>text</code>(string), the string to search for in K-Samsök.</li>
+				<li><code>start</code>(int), the result to start at, for returning the first result this should be set to <code>1</code>.</li>
+				<li><code>hits</code>(int), the number of results to return(1-500 is valid).</li>
+				<li><code>image</code>(boal), optional parameter set to <code>true</code> if you only want to return objects with images.</li>
+			</ul>
+			<strong>Examples</strong>
+			<p>Searching for the string <code>Fiskmås</code> returning 60 results starting at te first result:</p>
+			<pre>
+				<span>$kSamsok->search('Fiskmås', 1, 60);</span>
+			</pre>
+			<p>Searching for the string <code>stockholm vattentorn</code> only returning results with images, starting at result 60 and getting 400 results:</p>
+			<pre>
+				<span>$kSamsok->search('stockholm vattentorn', 60, 400, true);</span>
+			</pre>
+
+			<h3 id="geo">Geo Search</h3>
+			<p>The method <code>geoSearch()</code> allows you to search by a geographical bounding box. <code>geoSearch()</code> has six parameters:</p>
+			<ul>
+				<li><code>west</code>(string), the most west longitude border of your bounding box.</li>
+				<li><code>south</code>(string), the most south latitude border of your bounding box.</li>
+				<li><code>east</code>(string), the most east longitude border of your bounding box.</li>
+				<li><code>north</code>(string), the most north latitude border of your bounding box.</li>
+				<li><code>start</code>(int), the result to start at, for returning the first result this should be set to <code>1</code>.</li>
+				<li><code>hits</code>(int), optional by default set to <code>60</code>. The number of results to return(1-500 is valid).</li>
+			</ul>
+			<strong>Examples</strong>
+			<p>Search by small bounding box in Sörmland, starting at the first result:</p>
+			<pre>
+				<span>$west = '16.41';</span>
+				<span>$south = '59.07';</span>
+				<span>$east = '16.42';</span>
+				<span>$north = '59.08';</span>
+				<span>$kSamsok->geoSearch($west, $south, $east, $north, 1);</span>
+			</pre>
+			<p>Search in the same bounding box as above but return 500 results starting at result 300:</p>
+			<pre>
+				<span>$west = '16.41';</span>
+				<span>$south = '59.07';</span>
+				<span>$east = '16.42';</span>
+				<span>$north = '59.08';</span>
+				<span>$kSamsok->geoSearch($west, $south, $east, $north, 300, 500);</span>
+			</pre>
+
+			<h3 id="hint">Search Hint</h3>
+			<p>The <code>searchHint()</code> method allows you to return search suggestions from a string. This method has two parameters:</p>
+			<ul>
+				<li><code>text</code>(string), the string to get suggestions from.</li>
+				<li><code>hits</code>(int), optional the number of suggestions to return, <code>5</code> by default.</li>
+			</ul>
+			<strong>Examples</strong>
+			<p>Get five suggestions for the string <code>ny</code>:</p>
+			<pre>
+				<span>$kSamsok->searchHint('ny');</span>
+			</pre>
+			<p>Get three suggestions for the string <code>ka</code>:</p>
+			<pre>
+				<span>$kSamsok->searchHint('ka', 3);</span>
+			</pre>
+
+			<h3 id="relations">Relations</h3>
+			<p>The <code>relations()</code> method allows you to return a list of object related to another. The method has only one parameter:</p>
+			<ul>
+				<li><code>object uri</code>(string), a valid URI for a object in K-Samsök. The parameters allows different types of URIs described below.</li>
+			</ul>
+			<p>Raw URI such as:</p>
+			<ul>
+				<li><code>raa/fmi/10028201230001</code></li>
+			</ul>
+			<p>URL to HTML, RDF or XML source:</p>
+			<ul>
+				<li><code>http://kulturarvsdata.se/raa/kmb/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/xml/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/rdf/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/html/16000300020896</code></li>
+			</ul>
+			<strong>Example</strong>
+			<p>Get all relations for the object <code>raa/fmi/10028201230001</code>:</p>
+			<pre>
+				<span>$kSamsok->relations('raa/fmi/10028201230001');</span>
+			</pre>
+
+			<h3 id="object">Object</h3>
+			<p>The <code>object()</code> method returns a object based on a URI or URL. The method has only one parameter:</p>
+			<ul>
+				<li><code>object uri</code>(string), a valid URI for a object in K-Samsök. The parameters allows different types of URIs described below.</li>
+			</ul>
+			<p>Raw URI such as:</p>
+			<ul>
+				<li><code>raa/fmi/10028201230001</code></li>
+			</ul>
+			<p>URL to HTML, RDF or XML source:</p>
+			<ul>
+				<li><code>http://kulturarvsdata.se/raa/kmb/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/xml/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/rdf/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/html/16000300020896</code></li>
+			</ul>
+			<strong>Example</strong>
+			<p>Return the object <code>shm/18797</code> based on the URL to its XML source:</p>
+			<pre>
+				<span>$kSamsok->object('http://kulturarvsdata.se/shm/site/xml/18797');</span>
+			</pre>
+
+			<h2>Advanced Usage</h2>
+
+			<h3 id="extending">Extending</h3>
+			#TODO
+			<h3 id="validxml">validXml()</h3>
+			#TODO
+			<h3 id="prepareurl">prepareUrl()</h3>
+			#TODO
+			<h3 id="killxmlnamespace">killXmlNamespace()</h3>
+			#TODO
+			<h3 id="idformat">idFormat()</h3>
+			#TODO
+			<h3 id="parserecord">parseRecord()</h3>
+			#TODO
+		</main>
+		<footer>
+			Copyright: <a href="http://abbe98.github.io/">Albin Larsson</a> 2014-2015. Licensed under <a href="https://github.com/Abbe98/ksamsok-php/blob/master/LICENSE">MIT</a>.
+		</footer>
+	</body>
