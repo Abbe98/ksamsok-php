@@ -31,11 +31,13 @@
 				<li><a href="#object">Object</a></li>
 				<li class="header">Advanced Usage</li>
 				<li><a href="#extending">Extending</a></li>
-				<li><a href="#validxml">validXml()</a></li>
+				<li><a href="#intro-extending">Extending: Introduction</a></li>
 				<li><a href="#prepareurl">prepareUrl()</a></li>
+				<li><a href="#validxml">validXml()</a></li>
 				<li><a href="#killxmlnamespace">killXmlNamespace()</a></li>
-				<li><a href="#idformat">idFormat()</a></li>
 				<li><a href="#parserecord">parseRecord()</a></li>
+				<li><a href="#idformat">idFormat()</a></li>
+				<li><a href="#example-extending">Extending: Example</a></li>
 			</ul>
 		</nav>
 		<main>
@@ -179,17 +181,127 @@
 			<h2>Advanced Usage</h2>
 
 			<h3 id="extending">Extending</h3>
-			#TODO
-			<h3 id="validxml">validXml()</h3>
-			#TODO
+			<p>When KSamsök-PHP does not have a method for a request you want to preform against the K-Samsök API extending KSamsök-PHP might be the solution. Extending KSamsök-PHP allows you to use KSamsök-PHP functions for formating URIs, validate responds, parsing and more, on your own custom requests.</p>
+			<p class="infobox">Note that this may require that you are familiar with <a href="http://www.ksamsok.se/in-english/">The K-Samsök(SOCH) API</a>.</p>
+
+			<h3 id="intro-extending">Extending: Introduction</h3>
+			<p>Extending KSamsök-PHP is done using PHP extended classes and the <a href="http://php.net/manual/en/keyword.extends.php">extends keyword</a>. Extending K-Samsök does only support XML responses not RDF/JSON-LD ones.</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	// your custom calls</span>
+				<span>}</span>
+			</pre>
+
 			<h3 id="prepareurl">prepareUrl()</h3>
-			#TODO
+			<p>The <code>prepareUrl()</code> function will prepare the request URI. This includes dealing with whitespace and encoding.</p>
+			<strong>Example</strong>
+			<p>Prepares request URL from string:</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	public function customMethod($url) {</span>
+				<span>		$url = $this->prepareUrl($url);</span>
+				<span>	}</span>
+				<span>}</span>
+			</pre>
+
+			<h3 id="validxml">validXml()</h3>
+			<p>The function <code>validXml()</code> takes the request URL(string) and checks for valid respond.</p>
+			<strong>Example</strong>
+			<p>Looks for request errors:</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	public function customMethod($url) {</span>
+				<span>		$url = $this->prepareUrl($url);</span>
+				<span>		if ($this->validXml($url) !== false) {</span>
+				<span>			// respond was okay</span>
+				<span>		}</span>
+				<span>	}</span>
+				<span>}</span>
+			</pre>
+
 			<h3 id="killxmlnamespace">killXmlNamespace()</h3>
-			#TODO
-			<h3 id="idformat">idFormat()</h3>
-			#TODO
+			<p>Because the KSamsök-PHP parsing function does not support XML Namespaces <code>killXmlNamespace()</code> is used to over ride them.</p>
+			<strong>Example</strong>
+			<p>Over ride the XML Namespaces in respond:</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	public function customMethod($url) {</span>
+				<span>		$url = $this->prepareUrl($url);</span>
+				<span>		if ($this->validXml($url) !== false) {</span>
+				<span>			$xml = file_get_contents($url);</span>
+				<span>			$xml = $this->killXmlNamespace($xml);</span>
+				<span>		}</span>
+				<span>	}</span>
+				<span>}</span>
+			</pre>
+
 			<h3 id="parserecord">parseRecord()</h3>
-			#TODO
+			<p>The <code>parseRecord()</code> does parse a single record(SimpleXMLElement object) in XML format and returns it as a single PHP object.</p>
+			<strong>Example</strong>
+			<p>Parse all returned records and push them to result array:</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	public function customMethod($url) {</span>
+				<span>		$url = $this->prepareUrl($url);</span>
+				<span>		if ($this->validXml($url) !== false) {</span>
+				<span>			$xml = file_get_contents($url);</span>
+				<span>			$xml = $this->killXmlNamespace($xml);</span>
+				<span>			$xml = new SimpleXMLElement($xml);</span>
+				<span>			$result[] = array();</span>
+				<span>			foreach ($xml->records->record as $record) {</span>
+				<span>				$result[] = $this->parseRecord($record);</span>
+				<span>			}</span>
+				<span>		}</span>
+				<span>	}</span>
+				<span>}</span>
+			</pre>
+
+			<h3 id="idformat">idFormat()</h3>
+			<p><code>idFormat()</code> is used to convert a K-Samsök URIs to the XML or raw(no format) URI format. <code>idFormat()</code> has two parameters:</p>
+			<ul>
+				<li><code>uri</code>(string), the URI or URL to the object.</li>
+				<li><code>format</code>(string), optional <code>'raw'</code> by default, <code>'xml'</code> also supported.</li>
+			</ul>
+			<strong>Example</strong>
+			<p>Take any supported URI and get the XML one:</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	public function customMethod($uri) {</span>
+				<span>		$xmlUri = $this->idFormat($uri, 'xml');</span>
+				<span>	}</span>
+				<span>}</span>
+			</pre>
+
+			<h3 id="example-extending">Extending: Example</h3>
+			<p>The following example makes a search for all images and then just returns the ones that does not have any geo tag:</p>
+			<pre>
+				<span>customKSamsok extends kSamsok {</span>
+				<span>	public function photoSearchNoGeo($text) {</span>
+				<span>		$url = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=250&query=itemType="Foto"%20and%20text="' . $text . '"%20and%20mediaType="image/jpeg"%20and%20thumbnailExists=j&recordSchema=presentation';</span>
+				<span>		$url = $this->prepareUrl($url);</span>
+				<span>		$this->validXml($url);</span>
+				<span>		$xml = file_get_contents($url);</span>
+				<span>		$xml = $this->killXmlNamespace($xml);</span>
+				<span>		$xml = new SimpleXMLElement($xml);</span>
+				<span></span>
+				<span>		$firstResults[] = array();</span>
+				<span>		foreach ($xml->records->record as $record) {</span>
+				<span>			$firstResults[] = $this->parseRecord($record);</span>
+				<span>		}</span>
+				<span></span>
+				<span>		if (!empty($firstResults)) {</span>
+				<span>			for ($i=0; $i < count($firstResults); $i++) {</span>
+				<span>				if (empty($firstResults[$i]['presentation']['coordinates'])) {</span>
+				<span>					$results[] = $firstResults[$i];</span>
+				<span>				}</span>
+				<span>			}</span>
+				<span>		}</span>
+				<span></span>
+				<span>		return $results;</span>
+				<span>	}</span>
+				<span>}</span>
+			</pre>
+
 		</main>
 		<footer>
 			Copyright: <a href="http://abbe98.github.io/">Albin Larsson</a> 2014-2015. Licensed under <a href="https://github.com/Abbe98/ksamsok-php/blob/master/LICENSE">MIT</a>.
