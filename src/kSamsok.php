@@ -35,6 +35,20 @@ class kSamsok {
     }
   }
 
+  protected function validJson($url) {
+    try {
+      @$json = file_get_contents($url);
+
+      if ($json === false || json_decode($json) === null) {
+        throw new Exception('Bad API request. (' . $url . ')');
+      }
+    } catch(Exception $e) {
+      echo 'Caught Exception: ',  $e->getMessage(), "\n";
+      // these are fatal errors so kill the script
+      die();
+    }
+  }
+
   protected function prepareUrl($url) {
     // replace withe space
     $url = preg_replace('/\\s/', '%20', $url);
@@ -326,5 +340,16 @@ class kSamsok {
     } else {
       return false;
     }
+  }
+
+  public function ugcObject($objectId) {
+    $objectId = $this->idFormat($objectId, 'url');
+
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey '&method=retrieve&scope=all&objectUri=' . $objectId . '&format=json'
+    $this->validJson($urlQuery);
+
+    $json = file_get_contents($urlQuery);
+
+    return json_decode($json);
   }
 }
