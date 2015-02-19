@@ -357,8 +357,6 @@ class kSamsok {
     $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey '&method=retrieve&scope=count&objectUri=' . $objectId . '&format=json';
     $this->validJson($urlQuery);
 
-    ;
-
     return file_get_contents($urlQuery);
   }
 
