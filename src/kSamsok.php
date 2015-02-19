@@ -1,14 +1,22 @@
 <?php
 class kSamsok {
   public $key;
+  public $ugcKey;
   public $url = 'http://kulturarvsdata.se/ksamsok/api?';
+  public $ugcUrl = 'http://ugc.kulturarvsdata.se/UGC-hub/api?';
 
-  public function __construct($key) {
+  public function __construct($key, $ugcKey = false) {
     $this->key = $key;
+    $this->ugcKey = $ugcKey;
     // checks if API Key or request URL is bad(can also )
     // check if URL does return a error
     $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
     $this->validXml($testQuery);
+
+    if ($this->ugcKey !== false) {
+      $testQuery = $this->url . 'x-api=' . $this->ugcKey . 'method=retrieve&scope=count&objectUri=all';
+      $this->validXml($testQuery);
+    }
   }
 
   // Checks if valid xml is returned, if not throw Exception and kill the script
@@ -18,6 +26,20 @@ class kSamsok {
       @$xml = file_get_contents($url);
       // check if file_get_contents returned a error or warning
       if($xml === false) {
+        throw new Exception('Bad API request. (' . $url . ')');
+      }
+    } catch(Exception $e) {
+      echo 'Caught Exception: ',  $e->getMessage(), "\n";
+      // these are fatal errors so kill the script
+      die();
+    }
+  }
+
+  protected function validJson($url) {
+    try {
+      @$json = file_get_contents($url);
+
+      if ($json === false || json_decode($json) === null) {
         throw new Exception('Bad API request. (' . $url . ')');
       }
     } catch(Exception $e) {
@@ -133,7 +155,7 @@ class kSamsok {
   }
 
   protected function idFormat($id, $format = 'raw') {
-    // $format can be string 'xml' or string 'raw'
+    // $format can be string 'xml'/string 'raw'/string 'uri'
 
     // if is the entire url strip it off
     if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
@@ -167,6 +189,14 @@ class kSamsok {
         // if no format exists add '/xml/'
         $formatLocation = strrpos($id, '/', 0);
         return substr_replace($id, '/xml', $formatLocation, 0);
+      }
+    }
+
+    if ($format === 'url') {
+      if (strpos($id,'http://kulturarvsdata.se/')) {
+        return $id;
+      } else {
+        return 'http://kulturarvsdata.se/' . $id;
       }
     }
   }
@@ -310,5 +340,31 @@ class kSamsok {
     } else {
       return false;
     }
+  }
+
+  public function ugcObject($objectId) {
+    $objectId = $this->idFormat($objectId, 'url');
+
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey . '&method=retrieve&scope=all&objectUri=' . $objectId . '&format=json';
+    $this->validJson($urlQuery);
+
+    return file_get_contents($urlQuery);
+  }
+
+  public function ugcCount($objectId) {
+    $objectId = $this->idFormat($objectId, 'url');
+
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey . '&method=retrieve&scope=count&objectUri=' . $objectId . '&format=json';
+    $this->validJson($urlQuery);
+
+    return file_get_contents($urlQuery);
+  }
+
+  public function ugcSingleRelation($contentId) {
+
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey . '&method=retrieve&objectUri=all&contentId=' . $contentId . '&scope=single&format=json';
+    $this->validJson($urlQuery);
+
+    return file_get_contents($urlQuery);
   }
 }
