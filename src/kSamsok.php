@@ -1,14 +1,22 @@
 <?php
 class kSamsok {
   public $key;
+  public $ugcKey;
   public $url = 'http://kulturarvsdata.se/ksamsok/api?';
+  public $ugcUrl = 'http://ugc.kulturarvsdata.se/UGC-hub/api?';
 
-  public function __construct($key) {
+  public function __construct($key, $ugcKey = false) {
     $this->key = $key;
+    $this->ugcKey = $ugcKey;
     // checks if API Key or request URL is bad(can also )
     // check if URL does return a error
     $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
     $this->validXml($testQuery);
+
+    if ($this->ugcKey !== false) {
+      $testQuery = $this->url . 'x-api=' . $this->ugcKey . 'method=retrieve&scope=count&objectUri=all';
+      $this->validXml($testQuery);
+    }
   }
 
   // Checks if valid xml is returned, if not throw Exception and kill the script
