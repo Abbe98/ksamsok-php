@@ -345,7 +345,7 @@ class kSamsok {
   public function ugcObject($objectId) {
     $objectId = $this->idFormat($objectId, 'url');
 
-    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey '&method=retrieve&scope=all&objectUri=' . $objectId . '&format=json';
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey . '&method=retrieve&scope=all&objectUri=' . $objectId . '&format=json';
     $this->validJson($urlQuery);
 
     return file_get_contents($urlQuery);
@@ -354,7 +354,7 @@ class kSamsok {
   public function ugcCount($objectId) {
     $objectId = $this->idFormat($objectId, 'url');
 
-    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey '&method=retrieve&scope=count&objectUri=' . $objectId . '&format=json';
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey . '&method=retrieve&scope=count&objectUri=' . $objectId . '&format=json';
     $this->validJson($urlQuery);
 
     return file_get_contents($urlQuery);
@@ -362,9 +362,9 @@ class kSamsok {
 
   public function ugcSingleRelation($contentId) {
 
-    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey '&method=retrieve&objectUri=all&contentId=' . $contentId . '&scope=single&format=json';
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey . '&method=retrieve&objectUri=all&contentId=' . $contentId . '&scope=single&format=json';
     $this->validJson($urlQuery);
 
     return file_get_contents($urlQuery);
-  } 
+  }
 }
