@@ -352,4 +352,15 @@ class kSamsok {
 
     return json_decode($json);
   }
+
+  public function ugcCount($objectId) {
+    $objectId = $this->idFormat($objectId, 'url');
+
+    $urlQuery = $this->ugcUrl . 'x-api=' . $this->ugcKey '&method=retrieve&scope=count&objectUri=' . $objectId . '&format=json'
+    $this->validJson($urlQuery);
+
+    $json = file_get_contents($urlQuery);
+
+    return json_decode($json);
+  } 
 }
