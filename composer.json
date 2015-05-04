@@ -1,6 +1,6 @@
 {
   "name": "abbe98/ksamsok-php",
-  "description": "PHP library for the K-Samsök API.",
+  "description": "PHP library for the K-Samsök API(SOCH).",
   "keywords": ["ksamsok","API", "culture"],
   "homepage": "http://abbe98.github.io/ksamsok-php/",
   "license": "MIT",

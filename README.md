@@ -1,37 +1,36 @@
-#KSamsök-PHP
-API library for the [K-Samsök API][0].
+# KSamsök-PHP
 
-Outdated README, see site for latest documentation.
+KSamsök-PHP is a PHP library for the [K-Samsök(SOCH) API](http://www.ksamsok.se/in-english/). The K-Samsök aggregator has over 5.6 million cultural objects indexed from various sources.
 
-##Usage
+##Documentation
 
-Set API-key(`test` works for development):
+You find the latest documentation at the [web page](http://abbe98.github.io/ksamsok-php/).
 
-`$ksamsok = new KSamsok('test');`
+Documentation quick links:
 
-Do a regular search for "Fiskmås", starting on result one returning 60 results:
+*Basic*
 
-`$ksamsok->search('Fiskmås', 1, 60);`
+ - [Introduction](http://abbe98.github.io/ksamsok-php/#intro)
+ - [Install](http://abbe98.github.io/ksamsok-php/#install)
+ - [Usage](http://abbe98.github.io/ksamsok-php/#usage)
 
-Optional image parameter, if you only want to return results with images:
+*Public Methods*
 
-`$ksamsok->search('Fiskmås', 1, 60, true);`
+ - [Search](http://abbe98.github.io/ksamsok-php/#search)
+ - [Geo Search](http://abbe98.github.io/ksamsok-php/#geo)
+ - [Search Hint](http://abbe98.github.io/ksamsok-php/#hint)
+ - [Relations](http://abbe98.github.io/ksamsok-php/#relations)
+ - [Object](http://abbe98.github.io/ksamsok-php/#object)
 
-Get all relations for `raa/fmi/10028201230001`:
+*Advanced Usage*
 
-`$ksamsok->relations('raa/fmi/10028201230001');`
+ - [Extending](http://abbe98.github.io/ksamsok-php/#extending)
+ - [Extending: Introduction](http://abbe98.github.io/ksamsok-php/#intro-extending)
+ - [prepareUrl()](http://abbe98.github.io/ksamsok-php/#prepareurl)
+ - [validXml()](http://abbe98.github.io/ksamsok-php/#validxml)
+ - [killXmlNamespace()](http://abbe98.github.io/ksamsok-php/#killxmlnamespace)
+ - [parseRecord()](http://abbe98.github.io/ksamsok-php/#parserecord)
+ - [idFormat()](http://abbe98.github.io/ksamsok-php/#idformat)
+ - [Extending: Example](http://abbe98.github.io/ksamsok-php/#example-extending)
 
-Get search suggestions for the letters `kå`:
-
-`$ksamsok->searchHint('kå');`
-
-Search by bounding box:
-    
-    $west = '16.410484313964844';
-    $south = '59.070786792947565';
-    $east = '16.41958236694336';
-    $north = '59.074624595969645';
-    $ksamsok->geoSearch($west, $south, $east, $north, 1);
-
-
-[0]: http://www.ksamsok.se/in-english/
+KSamsök-PHP is licensed under [MIT](https://github.com/Abbe98/ksamsok-php/blob/master/LICENSE).
