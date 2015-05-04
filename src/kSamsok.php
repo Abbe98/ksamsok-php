@@ -8,22 +8,21 @@ class kSamsok {
     // checks if API Key or request URL is bad(can also )
     // check if URL does return a error
     $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
-    $this->validXml($testQuery);
+    if(!$this->validXml($testQuery)) {
+      // return false if response is invalid
+      return false;
+    }
   }
 
-  // Checks if valid xml is returned, if not throw Exception and kill the script
+  // Checks if valid xml is returned, if return false
   protected function validXml($url) {
-    try {
-      // @ignore warning, it's handled below
-      @$xml = file_get_contents($url);
-      // check if file_get_contents returned a error or warning
-      if($xml === false) {
-        throw new Exception('Bad API request. (' . $url . ')');
-      }
-    } catch(Exception $e) {
-      echo 'Caught Exception: ',  $e->getMessage(), "\n";
-      // these are fatal errors so kill the script
-      die();
+    // @ignore warning, it's handled below
+    @$xml = file_get_contents($url);
+    // check if file_get_contents returned a error or warning
+    if($xml === false) {
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -133,7 +132,7 @@ class kSamsok {
   }
 
   protected function idFormat($id, $format = 'raw') {
-    // $format can be string 'xml' or string 'raw'
+    // $format can be string 'xml'/string 'raw'/string 'uri'
 
     // if is the entire url strip it off
     if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
@@ -169,6 +168,14 @@ class kSamsok {
         return substr_replace($id, '/xml', $formatLocation, 0);
       }
     }
+
+    if ($format === 'url') {
+      if (strpos($id,'http://kulturarvsdata.se/')) {
+        return $id;
+      } else {
+        return 'http://kulturarvsdata.se/' . $id;
+      }
+    }
   }
 
   public function search($text, $start, $hits, $images = false) {
@@ -191,8 +198,10 @@ class kSamsok {
     }
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
-    // check if URL does return a error and kill the script if it does
-    $this->validXml($urlQuery);
+    // check if URL does return a error and return false if it does
+    if(!$this->validXml($urlQuery)) {
+      return false;
+    }
     // get the XML
     $xml = file_get_contents($urlQuery);
     // bypass XML namespace
@@ -224,8 +233,10 @@ class kSamsok {
 
     // construct request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
-    // check if URL does return a error and kill the script if it does
-    $this->validXml($urlQuery);
+        // check if URL does return a error and return false if it does
+    if(!$this->validXml($urlQuery)) {
+      return false;
+    }
     // get the XML
     $xml = file_get_contents($urlQuery);
     // bypass XML namespace
@@ -247,8 +258,10 @@ class kSamsok {
     $objectId = $this->idFormat($objectId, 'xml');
     // create the request url(for object API key isn't required).
     $urlQuery = 'http://kulturarvsdata.se/' . $objectId;
-    // check if URL does return a error and kill the script if it does
-    $this->validXml($urlQuery);
+    // check if URL does return a error and return false if it does
+    if(!$this->validXml($urlQuery)) {
+      return false;
+    }
     // get the XML
     $xml = file_get_contents($urlQuery);
     // bypass XML namespace
@@ -263,8 +276,10 @@ class kSamsok {
     $objectId = $this->idFormat($objectId);
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
-    // check if URL does return a error and kill the script if it does
-    $this->validXml($urlQuery);
+    // check if URL does return a error and return false if it does
+    if(!$this->validXml($urlQuery)) {
+      return false;
+    }
     // get the XML
     $xml = file_get_contents($urlQuery);
     $xml = new SimpleXMLElement($xml);
@@ -290,8 +305,10 @@ class kSamsok {
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
-    // check if URL does return a error and kill the script if it does
-    $this->validXml($urlQuery);
+    // check if URL does return a error and return false if it does
+    if(!$this->validXml($urlQuery)) {
+      return false;
+    }
     // get the XML
     $xml = file_get_contents($urlQuery);
     $xml = new SimpleXMLElement($xml);
