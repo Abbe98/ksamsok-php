@@ -133,7 +133,7 @@ class kSamsok {
   }
 
   protected function idFormat($id, $format = 'raw') {
-    // $format can be string 'xml' or string 'raw'
+    // $format can be string 'xml'/string 'raw'/string 'uri'
 
     // if is the entire url strip it off
     if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
@@ -167,6 +167,14 @@ class kSamsok {
         // if no format exists add '/xml/'
         $formatLocation = strrpos($id, '/', 0);
         return substr_replace($id, '/xml', $formatLocation, 0);
+      }
+    }
+
+    if ($format === 'url') {
+      if (strpos($id,'http://kulturarvsdata.se/')) {
+        return $id;
+      } else {
+        return 'http://kulturarvsdata.se/' . $id;
       }
     }
   }
