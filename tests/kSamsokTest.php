@@ -67,6 +67,19 @@ class kSamsokTest extends PHPUnit_Framework_TestCase {
     );
   }
 
+  // provides a template for serachHint() testing
+  public function providerHint() {
+    return array(
+      array('Fiskmås', 6, true),
+      array('what string you can possible think of', 7, true),
+      array('', 7, true),
+
+      array(7, 6, false),
+      array('', -2, false),
+      array('', 0.2, false),
+    );
+  }
+
 /**
  * @dataProvider providerSearch
  */
@@ -139,7 +152,21 @@ class kSamsokTest extends PHPUnit_Framework_TestCase {
     }
   }
 
-  public function testsearchHint() {
+/**
+ * @dataProvider providerHint
+ */
+  public function testsearchHint($string, $results, $validate) {
+    $kSamsok = new kSamsok($this->key);
+    $result = $kSamsok->searchHint($string, $results);
 
+    // all URIs that should pass
+    if ($validate) {
+      $this->assertArrayHasKey('count', $result);
+    }
+
+    // all URIs that shouldn't pass
+    if (!$validate) {
+      $this->assertFalse($result);
+    }
   }
 }
