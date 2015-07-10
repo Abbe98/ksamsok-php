@@ -26,6 +26,27 @@ class kSamsokTest extends PHPUnit_Framework_TestCase {
     );
   }
 
+  // provides a template for geoSearch() data
+  public function providerGeo() {
+    return array(
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 1, 60, true),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 1, 500, 60, true),
+      array('16.4', '59.0', '16.4', '59.0', 1777, 1, true),
+      array(16.410484313964844, '59.070786792947565', '16.41958236694336', '59.074624595969645', 1, 60, true),
+      array('16.410484313964844', 59.070786792947565, '16.41958236694336', '59.074624595969645', 1, 60, true),
+      array('16.410484313964844', '59.070786792947565', 16.41958236694336, '59.074624595969645', 1, 60, true),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', 59.074624595969645, 1, 60, true),
+
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 60, false),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0.3, 60, false),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', -2, 60, false),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 501, false),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 0, false),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 2.5, false),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, -2, false),
+    );
+  }
+
   // provides a template for URIs to be tested
   public function providerId() {
     return array(
@@ -64,8 +85,22 @@ class kSamsokTest extends PHPUnit_Framework_TestCase {
     }
   }
 
-  public function testgeoSearch() {
+/**
+ * @dataProvider providerGeo
+ */
+  public function testgeoSearch($coord1, $coord2, $coord3, $coord4, $start, $results, $validate) {
+    $kSamsok = new kSamsok($this->key);
+    $result = $kSamsok->geoSearch($coord1, $coord2, $coord3, $coord4, $start, $results);
 
+    // all URIs that should pass
+    if ($validate) {
+      $this->assertArrayHasKey('hits', $result);
+    }
+
+    // all URIs that shouldn't pass
+    if (!$validate) {
+      $this->assertFalse($result);
+    }
   }
 
 /**
