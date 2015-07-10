@@ -1,7 +1,7 @@
 <?php
 class kSamsok {
   public $key;
-  public $url = 'http://kulturarvsdata.se/ksamsok/api?';
+  protected $url = 'http://kulturarvsdata.se/ksamsok/api?';
 
   public function __construct($key) {
     $this->key = $key;
