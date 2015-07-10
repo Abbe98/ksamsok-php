@@ -121,8 +121,22 @@ class kSamsokTest extends PHPUnit_Framework_TestCase {
     }
   }
 
-  public function testrelations() {
+/**
+ * @dataProvider providerId
+ */
+  public function testrelations($uri, $validate) {
+    $kSamsok = new kSamsok($this->key);
+    $result = $kSamsok->relations($uri);
 
+    // all URIs that should pass
+    if ($validate) {
+      $this->assertArrayHasKey('count', $result);
+    }
+
+    // all URIs that shouldn't pass
+    if (!$validate) {
+      $this->assertFalse($result);
+    }
   }
 
   public function testsearchHint() {
