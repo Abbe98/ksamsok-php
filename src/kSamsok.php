@@ -8,14 +8,14 @@ class kSamsok {
     // checks if API Key or request URL is bad(can also )
     // check if URL does return a error
     $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
-    if(!$this->validXml($testQuery)) {
+    if(!$this->validResponse($testQuery)) {
       // return false if response is invalid
       return false;
     }
   }
 
-  // Checks if valid xml is returned, if return false
-  protected function validXml($url) {
+  // Checks if a valid response is returned
+  protected function validResponse($url) {
     // @ignore warning, it's handled below
     @$xml = file_get_contents($url);
     // check if file_get_contents returned a error or warning
@@ -199,7 +199,7 @@ class kSamsok {
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and return false if it does
-    if(!$this->validXml($urlQuery)) {
+    if(!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -234,7 +234,7 @@ class kSamsok {
     // construct request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
         // check if URL does return a error and return false if it does
-    if(!$this->validXml($urlQuery)) {
+    if(!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -259,7 +259,7 @@ class kSamsok {
     // create the request url(for object API key isn't required).
     $urlQuery = 'http://kulturarvsdata.se/' . $objectId;
     // check if URL does return a error and return false if it does
-    if(!$this->validXml($urlQuery)) {
+    if(!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -277,7 +277,7 @@ class kSamsok {
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
     // check if URL does return a error and return false if it does
-    if(!$this->validXml($urlQuery)) {
+    if(!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -306,7 +306,7 @@ class kSamsok {
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and return false if it does
-    if(!$this->validXml($urlQuery)) {
+    if(!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
