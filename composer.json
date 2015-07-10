@@ -18,5 +18,8 @@
   },
   "autoload": {
     "files": ["src/kSamsok.php"]
+  },
+  "autoload-dev": {
+    "files": ["tests/kSamsokTest.php"]
   }
 }
