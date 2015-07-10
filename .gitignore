@@ -220,3 +220,4 @@ pip-log.txt
 index.php
 temp.php
 vendor/*
+composer.lock
