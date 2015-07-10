@@ -5,7 +5,7 @@ class kSamsok {
 
   public function __construct($key) {
     $this->key = $key;
-    // checks if API Key or request URL is bad(can also )
+    // checks if API Key or request URL is bad
     // check if URL does return a error
     $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
     if(!$this->validResponse($testQuery)) {
