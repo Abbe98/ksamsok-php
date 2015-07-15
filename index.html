@@ -29,14 +29,14 @@
 				<li><a href="#hint">Search Hint</a></li>
 				<li><a href="#relations">Relations</a></li>
 				<li><a href="#object">Object</a></li>
+				<li><a href="#uri">URI Format</a></li>
 				<li class="header">Advanced Usage</li>
 				<li><a href="#extending">Extending</a></li>
 				<li><a href="#intro-extending">Extending: Introduction</a></li>
 				<li><a href="#prepareurl">prepareUrl()</a></li>
-				<li><a href="#validxml">validXml()</a></li>
+				<li><a href="#validresponse">validResponse()</a></li>
 				<li><a href="#killxmlnamespace">killXmlNamespace()</a></li>
 				<li><a href="#parserecord">parseRecord()</a></li>
-				<li><a href="#idformat">idFormat()</a></li>
 				<li><a href="#example-extending">Extending: Example</a></li>
 			</ul>
 		</nav>
@@ -44,7 +44,7 @@
 			<h1>KSamsök-PHP</h1>
 
 			<p class="infobox">Looking for the <a href="http://www.ksamsok.se/in-english/">official K-Samsök(SOCH) API documentation</a>?</p>
-			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.6.0">version 0.6.0</a></p>
+			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.7.0">version 0.7.0</a></p>
 
 			<h3 id="intro">Introduction</h3>
 
@@ -62,7 +62,7 @@
 			<p>If you are not able to use Composer you can simply require the file <a href="https://github.com/Abbe98/ksamsok-php/blob/master/src/kSamsok.php"><code>kSamsok.php</code></a>.</p>
 
 			<h3 id="usage">Usage</h3>
-			<p>The API requires a API key that you can obtain by contacting the Swedish National Heritage Board for development you can use the key <code>test</code>.</p>
+			<p>The API requires a API key that you can obtain by contacting the Swedish National Heritage Board. For development you can use the key <code>test</code>.</p>
 
 			<p>Create a new instance of the <code>KSamsok</code> class and include your API key.</p>
 			<pre>
@@ -76,9 +76,9 @@
 			<p>The basic <code>search()</code> method has a total of four parameters:</p>
 			<ul>
 				<li><code>text</code>(string), the string to search for in K-Samsök.</li>
-				<li><code>start</code>(int), the result to start at, for returning the first result this should be set to <code>1</code>.</li>
-				<li><code>hits</code>(int), the number of results to return(1-500 is valid).</li>
-				<li><code>image</code>(boal), optional parameter set to <code>true</code> if you only want to return objects with images.</li>
+				<li><code>start</code>(int/string), the result to start at, for returning the first result this should be set to <code>1</code>.</li>
+				<li><code>hits</code>(int/string), the number of results to return(1-500 is valid).</li>
+				<li><code>image</code>(boal), optional parameter, set to <code>true</code> if you only want to return objects with images.</li>
 			</ul>
 			<strong>Examples</strong>
 			<p>Searching for the string <code>Fiskmås</code> returning 60 results starting at te first result:</p>
@@ -93,12 +93,12 @@
 			<h3 id="geo">Geo Search</h3>
 			<p>The method <code>geoSearch()</code> allows you to search by a geographical bounding box. <code>geoSearch()</code> has six parameters:</p>
 			<ul>
-				<li><code>west</code>(string), the most west longitude border of your bounding box.</li>
-				<li><code>south</code>(string), the most south latitude border of your bounding box.</li>
-				<li><code>east</code>(string), the most east longitude border of your bounding box.</li>
-				<li><code>north</code>(string), the most north latitude border of your bounding box.</li>
-				<li><code>start</code>(int), the result to start at, for returning the first result this should be set to <code>1</code>.</li>
-				<li><code>hits</code>(int), optional by default set to <code>60</code>. The number of results to return(1-500 is valid).</li>
+				<li><code>west</code>(int/string), the most west longitude border of your bounding box.</li>
+				<li><code>south</code>(int/string, the most south latitude border of your bounding box.</li>
+				<li><code>east</code>(int/string), the most east longitude border of your bounding box.</li>
+				<li><code>north</code>(int/string), the most north latitude border of your bounding box.</li>
+				<li><code>start</code>(int/string), the result to start at, for returning the first result this should be set to <code>1</code>.</li>
+				<li><code>hits</code>(int/string), optional by default set to <code>60</code>. The number of results to return(1-500 is valid).</li>
 			</ul>
 			<strong>Examples</strong>
 			<p>Search by small bounding box in Sörmland, starting at the first result:</p>
@@ -122,7 +122,7 @@
 			<p>The <code>searchHint()</code> method allows you to return search suggestions from a string. This method has two parameters:</p>
 			<ul>
 				<li><code>text</code>(string), the string to get suggestions from.</li>
-				<li><code>hits</code>(int), optional the number of suggestions to return, <code>5</code> by default.</li>
+				<li><code>hits</code>(int/string), optional the number of suggestions to return, <code>5</code> by default.</li>
 			</ul>
 			<strong>Examples</strong>
 			<p>Get five suggestions for the string <code>ny</code>:</p>
@@ -139,16 +139,19 @@
 			<ul>
 				<li><code>object uri</code>(string), a valid URI for a object in K-Samsök. The parameters allows different types of URIs described below.</li>
 			</ul>
-			<p>Raw URI such as:</p>
-			<ul>
-				<li><code>raa/fmi/10028201230001</code></li>
-			</ul>
-			<p>URL to HTML, RDF or XML source:</p>
+			<p>Raw URL/URI such as:</p>
 			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/16000300020896</code></li>
+				<li><code>raa/fmi/10028201230001</code></li>
+			</ul>
+			<p>URL/URI to HTML, RDF or XML source:</p>
+			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/xml/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/rdf/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/html/16000300020896</code></li>
+				<li><code>raa/kmb/xml/16000300020896</code></li>
+				<li><code>raa/kmb/rdf/16000300020896</code></li>
+				<li><code>raa/kmb/html/16000300020896</code></li>
 			</ul>
 			<strong>Example</strong>
 			<p>Get all relations for the object <code>raa/fmi/10028201230001</code>:</p>
@@ -161,16 +164,19 @@
 			<ul>
 				<li><code>object uri</code>(string), a valid URI for a object in K-Samsök. The parameters allows different types of URIs described below.</li>
 			</ul>
-			<p>Raw URI such as:</p>
-			<ul>
-				<li><code>raa/fmi/10028201230001</code></li>
-			</ul>
-			<p>URL to HTML, RDF or XML source:</p>
+			<p>Raw URL/URI such as:</p>
 			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/16000300020896</code></li>
+				<li><code>raa/fmi/10028201230001</code></li>
+			</ul>
+			<p>URL/URI to HTML, RDF or XML source:</p>
+			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/xml/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/rdf/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/html/16000300020896</code></li>
+				<li><code>raa/kmb/xml/16000300020896</code></li>
+				<li><code>raa/kmb/rdf/16000300020896</code></li>
+				<li><code>raa/kmb/html/16000300020896</code></li>
 			</ul>
 			<strong>Example</strong>
 			<p>Return the object <code>shm/18797</code> based on the URL to its XML source:</p>
@@ -178,17 +184,40 @@
 				<span>$kSamsok->object('http://kulturarvsdata.se/shm/site/xml/18797');</span>
 			</pre>
 
+			<h3 id="uri">URI Format</h3>
+			The <code>uriFormat()</code> method can validate and convert SOCH URI/URL;s. <code>uriFormat()</code> will return <code>false</code> if provided with a invalid URI. <code>uriFormat()</code> has two parameters:</p>
+			<ul>
+				<li><code>uri</code>(string), the URI or URL to the object.</li>
+				<li><code>format</code>(string), optional <code>'raw'</code>(raw URI) by default. All supported output/input formats:
+					<ul>
+						<li><code>raw</code>(default)</li>
+						<li><code>rawurl</code></li>
+						<li><code>xml</code></li>
+						<li><code>xmlurl</code></li>
+						<li><code>rdf</code></li>
+						<li><code>rdfurl</code></li>
+						<li><code>html</code></li>
+						<li><code>htmlurl</code></li>
+					</ul>
+				</li>
+			</ul>
+			<strong>Example</strong>
+			<p>Get the XML source URL from the raw URI <code>shm/18797</code>:</p>
+			<pre>
+				<span>$kSamsok->uriFormat('shm/site/18797', 'xmlurl');</span>
+			</pre>
+
 			<h2>Advanced Usage</h2>
 
 			<h3 id="extending">Extending</h3>
-			<p>When KSamsök-PHP does not have a method for a request you want to preform against the K-Samsök API extending KSamsök-PHP might be the solution. Extending KSamsök-PHP allows you to use KSamsök-PHP functions for formating URIs, validate responds, parsing and more, on your own custom requests.</p>
+			<p>When KSamsök-PHP does not have a method for a request you want to preform against the K-Samsök API extending KSamsök-PHP might be the solution. Extending KSamsök-PHP allows you to use KSamsök-PHP functions for formating URIs, validate responds, parsing and more, together with your own custom requests.</p>
 			<p class="infobox">Note that this may require that you are familiar with <a href="http://www.ksamsok.se/in-english/">The K-Samsök(SOCH) API</a>.</p>
 
 			<h3 id="intro-extending">Extending: Introduction</h3>
-			<p>Extending KSamsök-PHP is done using PHP extended classes and the <a href="http://php.net/manual/en/keyword.extends.php">extends keyword</a>. Extending K-Samsök does only support XML responses not RDF/JSON-LD ones.</p>
+			<p>Extending KSamsök-PHP is done using PHP extended classes and the <a href="http://php.net/manual/en/keyword.extends.php">extends keyword</a>. Extending K-Samsök does not support JSON-LD responses by default.</p>
 			<pre>
 				<span>customKSamsok extends kSamsok {</span>
-				<span>	// your custom calls</span>
+				<span>	// your custom methods</span>
 				<span>}</span>
 			</pre>
 
@@ -204,15 +233,15 @@
 				<span>}</span>
 			</pre>
 
-			<h3 id="validxml">validXml()</h3>
-			<p>The function <code>validXml()</code> takes the request URL(string) and checks for valid respond.</p>
+			<h3 id="validresponse">validResponse()</h3>
+			<p>The function <code>validResponse()</code> takes the request URL(string) and checks for valid response.</p>
 			<strong>Example</strong>
 			<p>Looks for request errors:</p>
 			<pre>
 				<span>customKSamsok extends kSamsok {</span>
 				<span>	public function customMethod($url) {</span>
 				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		if ($this->validXml($url) !== false) {</span>
+				<span>		if ($this->validResponse($url) !== false) {</span>
 				<span>			// respond was okay</span>
 				<span>		}</span>
 				<span>	}</span>
@@ -227,7 +256,7 @@
 				<span>customKSamsok extends kSamsok {</span>
 				<span>	public function customMethod($url) {</span>
 				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		if ($this->validXml($url) !== false) {</span>
+				<span>		if ($this->validResponse($url) !== false) {</span>
 				<span>			$xml = file_get_contents($url);</span>
 				<span>			$xml = $this->killXmlNamespace($xml);</span>
 				<span>		}</span>
@@ -243,7 +272,7 @@
 				<span>customKSamsok extends kSamsok {</span>
 				<span>	public function customMethod($url) {</span>
 				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		if ($this->validXml($url) !== false) {</span>
+				<span>		if ($this->validResponse($url) !== false) {</span>
 				<span>			$xml = file_get_contents($url);</span>
 				<span>			$xml = $this->killXmlNamespace($xml);</span>
 				<span>			$xml = new SimpleXMLElement($xml);</span>
@@ -256,30 +285,14 @@
 				<span>}</span>
 			</pre>
 
-			<h3 id="idformat">idFormat()</h3>
-			<p><code>idFormat()</code> is used to convert a K-Samsök URIs to the XML or raw(no format) URI format. <code>idFormat()</code> has two parameters:</p>
-			<ul>
-				<li><code>uri</code>(string), the URI or URL to the object.</li>
-				<li><code>format</code>(string), optional <code>'raw'</code>(full URL) by default, <code>'xml'</code>/<code>'uri'</code> is also supported.</li>
-			</ul>
-			<strong>Example</strong>
-			<p>Take any supported URI and get the XML one:</p>
-			<pre>
-				<span>customKSamsok extends kSamsok {</span>
-				<span>	public function customMethod($uri) {</span>
-				<span>		$xmlUri = $this->idFormat($uri, 'xml');</span>
-				<span>	}</span>
-				<span>}</span>
-			</pre>
-
 			<h3 id="example-extending">Extending: Example</h3>
-			<p>The following example makes a search for all images and then just returns the ones that does not have any geo tag:</p>
+			<p>The following example makes a text search for all results with images and then just returns the ones that does not have any coordinate data:</p>
 			<pre>
 				<span>customKSamsok extends kSamsok {</span>
-				<span>	public function photoSearchNoGeo($text) {</span>
+				<span>	public function photoSearchNoCoords($text) {</span>
 				<span>		$url = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=250&query=itemType="Foto"%20and%20text="' . $text . '"%20and%20mediaType="image/jpeg"%20and%20thumbnailExists=j&recordSchema=presentation';</span>
 				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		$this->validXml($url);</span>
+				<span>		$this->validResponse($url);</span>
 				<span>		$xml = file_get_contents($url);</span>
 				<span>		$xml = $this->killXmlNamespace($xml);</span>
 				<span>		$xml = new SimpleXMLElement($xml);</span>
