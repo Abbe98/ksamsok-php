@@ -21,16 +21,16 @@ Documentation quick links:
  - [Search Hint](http://abbe98.github.io/ksamsok-php/#hint)
  - [Relations](http://abbe98.github.io/ksamsok-php/#relations)
  - [Object](http://abbe98.github.io/ksamsok-php/#object)
+ - [URI Format](http://abbe98.github.io/ksamsok-php/#uriformat)
 
 *Advanced Usage*
 
  - [Extending](http://abbe98.github.io/ksamsok-php/#extending)
  - [Extending: Introduction](http://abbe98.github.io/ksamsok-php/#intro-extending)
  - [prepareUrl()](http://abbe98.github.io/ksamsok-php/#prepareurl)
- - [validXml()](http://abbe98.github.io/ksamsok-php/#validxml)
+ - [validResponse()](http://abbe98.github.io/ksamsok-php/#validresponse)
  - [killXmlNamespace()](http://abbe98.github.io/ksamsok-php/#killxmlnamespace)
  - [parseRecord()](http://abbe98.github.io/ksamsok-php/#parserecord)
- - [idFormat()](http://abbe98.github.io/ksamsok-php/#idformat)
  - [Extending: Example](http://abbe98.github.io/ksamsok-php/#example-extending)
 
 KSamsök-PHP is licensed under [MIT](https://github.com/Abbe98/ksamsok-php/blob/master/LICENSE).
