@@ -131,63 +131,68 @@ class kSamsok {
     return $resultRecord;
   }
 
-  protected function idFormat($id, $format = 'raw') {
-    // $format can be string 'xml'/string 'raw'/string 'uri'
-
-    // if is the entire url strip it off
+  public function idFormat($id, $format = 'raw') {
+    // if the entire url is present strip it off
     if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
       $id = str_replace('http://kulturarvsdata.se/', '', $id);
     }
 
-    if ($format === 'raw') {
-      // if nor '/xml/' / '/rdf/' / '/html/' is found in $id
-      if (strpos($id,'/xml/') === false && strpos($id,'/rdf/') === false && strpos($id,'/html/') === false) {
-        return $id;
-      // if format exists in $id remove it
-      } elseif (strpos($id,'/rdf/') !== false) {
-        return str_replace('/rdf/', '', $id);
-      } elseif (strpos($id,'/html/') !== false) {
-        return str_replace('/html/', '', $id);
-      } elseif (strpos($id,'/xml/') !== false) {
-        return str_replace('/xml/', '', $id);
-      }
+    // strip off format
+    $id = str_replace('xml/', '', $id);
+    $id = str_replace('rdf/', '', $id);
+    $id = str_replace('html/', '', $id);
+
+    // find spot ti insert format string
+    $formatLocation = strrpos($id, '/', 0);
+
+    // build URL/validate using call
+    $urlQuery = 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
+    if(!$this->validResponse($urlQuery)) {
+      return false;
     }
 
-    if ($format === 'xml') {
-      // if string contains '/xml/'
-      if (strpos($id,'/xml/') !== false) {
-        return $id;
-      // replace '/html/' / '/rdf/' if found
-      } elseif (strpos($id,'/rdf/') !== false) {
-        return str_replace('/rdf/', '/xml/', $id);
-      } elseif (strpos($id,'/html/') !== false) {
-        return str_replace('/html/', '/xml/', $id);
-      } else {
-        // if no format exists add '/xml/'
-        $formatLocation = strrpos($id, '/', 0);
+    switch ($format) {
+      case 'xml':
         return substr_replace($id, '/xml', $formatLocation, 0);
-      }
-    }
-
-    if ($format === 'url') {
-      if (strpos($id,'http://kulturarvsdata.se/')) {
-        return $id;
-      } else {
+        break;
+      case 'rdf':
+        return substr_replace($id, '/rdf', $formatLocation, 0);
+        break;
+      case 'html':
+        return substr_replace($id, '/html', $formatLocation, 0);
+        break;
+      case 'rdfurl':
+        return 'http://kulturarvsdata.se/' . substr_replace($id, '/rdf', $formatLocation, 0);
+        break;
+      case 'htmlurl':
+        return 'http://kulturarvsdata.se/' . substr_replace($id, '/html', $formatLocation, 0);
+        break;
+      case 'xmlurl':
+        return 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
+        break;
+      case 'rawurl':
         return 'http://kulturarvsdata.se/' . $id;
-      }
+        break;
+      // defaults to 'raw'
+      default:
+        return $id;
+        break;
     }
   }
 
   public function search($text, $start, $hits, $images = false) {
-    try {
-      // check if $hits(hitsPerPage) is valid(1-500)
-      if($hits < 1 || $hits > 500) {
-        throw new Exception($hits . ' is not number between 1-500.');
-      }
-    } catch(Exception $e) {
-      echo 'Caught Exception: ',  $e->getMessage(), "\n";
-      // this is a fatal error so kill the script
-      die();
+    // check if $text isn't a string
+    if (!is_string($text)) {
+      return false;
+    }
+
+    if (!is_numeric($start) || $start < 1) {
+      return false;
+    }
+
+    // check if $hits(hitsPerPage) is valid(1-500)
+    if ($hits < 1 || $hits > 500) {
+      return false;
     }
 
     // create the request URL
@@ -219,16 +224,14 @@ class kSamsok {
     return $result;
   }
 
-  public function geoSearch($west, $south, $east, $north, $start, $hits = '60') {
-    try {
-      // check if $hits(hitsPerPage) is valid(1-500)
-      if($hits < 1 || $hits > 500) {
-        throw new Exception($hits . ' is not number between 1-500.');
-      }
-    } catch(Exception $e) {
-      echo 'Caught Exception: ',  $e->getMessage(), "\n";
-      // this is a fatal error so kill the script
-      die();
+  public function geoSearch($west, $south, $east, $north, $start, $hits = 60) {
+    if (!is_numeric($start) || $start < 1) {
+      return false;
+    }
+
+    // check if $hits(hitsPerPage) is valid(1-500)
+    if($hits < 1 || $hits > 500) {
+      return false;
     }
 
     // construct request URL
@@ -255,9 +258,7 @@ class kSamsok {
 
   public function object($objectId) {
     // format inputed $objectId
-    $objectId = $this->idFormat($objectId, 'xml');
-    // create the request url(for object API key isn't required).
-    $urlQuery = 'http://kulturarvsdata.se/' . $objectId;
+    $urlQuery = $this->idFormat($objectId, 'xmlurl');
     // check if URL does return a error and return false if it does
     if(!$this->validResponse($urlQuery)) {
       return false;
@@ -300,7 +301,15 @@ class kSamsok {
     return $relations;
   }
 
-  public function searchHint($string, $count = '5') {
+  public function searchHint($string, $count = 5) {
+    if (!is_string($string)) {
+      return false;
+    }
+
+    if (!is_numeric($count) || $count < 1) {
+      return false;
+    }
+
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
     // prepare url
@@ -314,6 +323,8 @@ class kSamsok {
     $xml = new SimpleXMLElement($xml);
 
     // process the xml to array
+    $result['count'] = (string) $xml->numberOfTerms;
+
     $i = 0;
     foreach ($xml->terms->term as $term) {
       $terms[$i]['value'] = (string) $term->value;
@@ -321,11 +332,11 @@ class kSamsok {
       $i++;
     }
 
-    // check if any results exists
+      // push $terms to $result
     if (isset($terms)) {
-      return $terms;
-    } else {
-      return false;
+      $result['hints'] = $terms;
     }
+
+    return $result;
   }
 }
