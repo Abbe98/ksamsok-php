@@ -131,7 +131,7 @@ class kSamsok {
     return $resultRecord;
   }
 
-  public function uriFormat($id, $format = 'raw') {
+  public function uriFormat($id, $format, $validate = false) {
     // if the entire url is present strip it off
     if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
       $id = str_replace('http://kulturarvsdata.se/', '', $id);
@@ -145,10 +145,12 @@ class kSamsok {
     // find spot ti insert format string
     $formatLocation = strrpos($id, '/', 0);
 
-    // build URL/validate using call
-    $urlQuery = 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
-    if(!$this->validResponse($urlQuery)) {
-      return false;
+    if ($validate) {
+      // build URL/validate using call
+      $urlQuery = 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
+      if(!$this->validResponse($urlQuery)) {
+        return false;
+      }
     }
 
     switch ($format) {
@@ -274,7 +276,7 @@ class kSamsok {
 
   public function relations($objectId) {
     // format inputed $objectId
-    $objectId = $this->uriFormat($objectId);
+    $objectId = $this->uriFormat($objectId, 'raw');
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
     // check if URL does return a error and return false if it does
