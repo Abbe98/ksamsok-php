@@ -44,7 +44,7 @@
 			<h1>KSamsök-PHP</h1>
 
 			<p class="infobox">Looking for the <a href="http://www.ksamsok.se/in-english/">official K-Samsök(SOCH) API documentation</a>?</p>
-			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.7.0">version 0.7.0</a></p>
+			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.7.2">version 0.7.2</a></p>
 
 			<h3 id="intro">Introduction</h3>
 
@@ -54,7 +54,7 @@
 
 			<h3 id="install">Install</h3>
 			<strong>Composer:</strong>
-			<p>Simply run the following in your project root:<p>
+			<p>Run the following command in your project root:<p>
 			<pre>
 				<span>composer require abbe98/ksamsok-php</span>
 			</pre>
@@ -185,10 +185,10 @@
 			</pre>
 
 			<h3 id="uri">URI Format</h3>
-			The <code>uriFormat()</code> method can validate and convert SOCH URI/URL;s. <code>uriFormat()</code> will return <code>false</code> if provided with a invalid URI. <code>uriFormat()</code> has two parameters:</p>
+			The <code>uriFormat()</code> method can validate and convert SOCH URI/URL;s. <code>uriFormat()</code> will return <code>false</code> if provided with a invalid URI. <code>uriFormat()</code> has three parameters:</p>
 			<ul>
 				<li><code>uri</code>(string), the URI or URL to the object.</li>
-				<li><code>format</code>(string), optional <code>'raw'</code>(raw URI) by default. All supported output/input formats:
+				<li><code>format</code>(string),  All supported output/input formats:
 					<ul>
 						<li><code>raw</code>(default)</li>
 						<li><code>rawurl</code></li>
@@ -200,6 +200,7 @@
 						<li><code>htmlurl</code></li>
 					</ul>
 				</li>
+				<li><code>validate</code>(bool), optional and defaults to <code>false</code>.</li>
 			</ul>
 			<strong>Example</strong>
 			<p>Get the XML source URL from the raw URI <code>shm/18797</code>:</p>
