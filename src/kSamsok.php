@@ -1,13 +1,13 @@
 <?php
 class kSamsok {
   public $key;
-  protected $url = 'http://kulturarvsdata.se/ksamsok/api?';
+  public $url = 'http://kulturarvsdata.se/';
 
   public function __construct($key) {
     $this->key = $key;
     // checks if API Key or request URL is bad
     // check if URL does return a error
-    $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
+    $testQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
     if (!$this->validResponse($testQuery)) {
       // return false if response is invalid
       return false;
@@ -190,7 +190,7 @@ class kSamsok {
     }
 
     // create the request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"&recordSchema=presentation';
+    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"&recordSchema=presentation';
     // if $images = true add &thumbnailExists=j to url
     if ($images) {
       $urlQuery = $urlQuery . '&thumbnailExists=j';
@@ -229,7 +229,7 @@ class kSamsok {
     }
 
     // construct request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
+    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
         // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
       return false;
@@ -253,6 +253,12 @@ class kSamsok {
   public function object($objectId) {
     // format inputed $objectId
     $urlQuery = $this->uriFormat($objectId, 'xmlurl');
+
+    // check if the base url is different from the default
+    if ($this->url !== 'http://kulturarvsdata.se/') {
+      $urlQuery = str_replace('http://kulturarvsdata.se/', $this->url, $urlQuery);
+    }
+
     // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
       return false;
@@ -270,7 +276,7 @@ class kSamsok {
     // format inputed $objectId
     $objectId = $this->uriFormat($objectId, 'raw');
     // create the request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
+    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
     // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
       return false;
@@ -305,7 +311,7 @@ class kSamsok {
     }
 
     // create the request URL
-    $urlQuery = $this->url . 'x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
+    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and return false if it does
