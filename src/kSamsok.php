@@ -8,7 +8,7 @@ class kSamsok {
     // checks if API Key or request URL is bad
     // check if URL does return a error
     $testQuery = $this->url . 'x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
-    if(!$this->validResponse($testQuery)) {
+    if (!$this->validResponse($testQuery)) {
       // return false if response is invalid
       return false;
     }
@@ -19,11 +19,7 @@ class kSamsok {
     // @ignore warning, it's handled below
     @$xml = file_get_contents($url);
     // check if file_get_contents returned a error or warning
-    if($xml === false) {
-      return false;
-    } else {
-      return true;
-    }
+    return ($xml === false ? false : true);
   }
 
   protected function prepareUrl($url) {
@@ -47,11 +43,7 @@ class kSamsok {
   protected function parseRecord($record) {
     // use a shortcut $variable for presentation tags
     // if record is first xml tag parse it if not presentation is the first
-    if (!empty($record->pres_item)) {
-      $pres = $record->pres_item;
-    } else {
-      $pres = $record;
-    }
+    $pres = (empty($record->pres_item) ? $pres = $record : $record->pres_item);
 
     // @ignore and just leave array values empty if they don't exists
     @$resultRecord['presentation']['version'] = (string) $pres->pres_version;
@@ -62,7 +54,7 @@ class kSamsok {
     @$resultRecord['presentation']['item_label'] = (string) $pres->pres_itemLabel;
 
     // loop through presentation tags and store them in array only if at least one isset()
-    if (isset($pres->pres_tag) === true) {
+    if (isset($pres->pres_tag)) {
       $i = 0;
       foreach ($pres->pres_tag as $pres_tag) {
         @$resultRecord['presentation']['pres_tags'][$i] = (string) $pres_tag;
@@ -74,7 +66,7 @@ class kSamsok {
     @$resultRecord['presentation']['content'] = (string) $pres->pres_content;
 
     // loop through presentation contexts and store child nodes only if at least one isset()
-    if (isset($pres->pres_context) === true) {
+    if (isset($pres->pres_context)) {
       $i = 0;
       foreach ($pres->pres_context as $pres_context) {
         @$resultRecord['presentation']['contexts'][$i]['event'] = (string) $pres_context->pres_event;
@@ -88,7 +80,7 @@ class kSamsok {
     @$resultRecord['presentation']['coordinates'] = (string) $pres->georss_where->gml_Point->gml_coordinates;
 
     // loop for all the images and their child nodes only if at least one isset()
-    if (isset($pres->pres_image) === true) {
+    if (isset($pres->pres_image)) {
       $i = 0;
       foreach ($pres->pres_image as $image) {
         @$resultRecord['presentation']['images'][$i]['thumbnail'] = (string) $image->pres_src[0];
@@ -99,14 +91,14 @@ class kSamsok {
         @$resultRecord['presentation']['images'][$i]['copyright'] = (string) $image->pres_copyright;
         @$resultRecord['presentation']['images'][$i]['license'] = (string) $image->pres_mediaLicense;
         @$resultRecord['presentation']['images'][$i]['license_url'] = (string) $image->pres_mediaLicenseUrl;
-         @$resultRecord['presentation']['images'][$i]['uri'] = (string) $image->pres_mediaUri;
+        @$resultRecord['presentation']['images'][$i]['uri'] = (string) $image->pres_mediaUri;
         @$resultRecord['presentation']['images'][$i]['html_url'] = (string) $image->pres_mediaUrl;
         $i++;
       }
     }
 
     // loop to get all references only if at least one isset()
-    if(isset($pres->pres_references->pres_reference) == true) {
+    if (isset($pres->pres_references->pres_reference)) {
       $i = 0;
       foreach ($pres->pres_references->pres_reference as $reference) {
         @$resultRecord['presentation']['references'][$i] = (string) $reference;
@@ -115,14 +107,14 @@ class kSamsok {
     }
 
     // sometimes the presentation model is broken so we need to use isset() for representations too
-    if (isset($pres->pres_representations->pres_representation) === true) {
+    if (isset($pres->pres_representations->pres_representation)) {
       // loop to determine representation format(they come in no specific order...)
       foreach ($pres->pres_representations->pres_representation as $representation) {
-        if(strpos($representation, 'html')) {
+        if (strpos($representation, 'html')) {
           @$resultRecord['presentation']['representation']['html'] = (string) $representation;
-        } elseif(strpos($representation, 'xml')) {
+        } elseif (strpos($representation, 'xml')) {
           @$resultRecord['presentation']['representation']['presentation'] = (string) $representation;
-        } elseif(strpos($representation, 'rdf')) {
+        } elseif (strpos($representation, 'rdf')) {
           @$resultRecord['presentation']['representation']['rdf'] = (string) $representation;
         }
       }
@@ -148,7 +140,7 @@ class kSamsok {
     if ($validate) {
       // build URL/validate using call
       $urlQuery = 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
-      if(!$this->validResponse($urlQuery)) {
+      if (!$this->validResponse($urlQuery)) {
         return false;
       }
     }
@@ -206,7 +198,7 @@ class kSamsok {
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and return false if it does
-    if(!$this->validResponse($urlQuery)) {
+    if (!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -232,14 +224,14 @@ class kSamsok {
     }
 
     // check if $hits(hitsPerPage) is valid(1-500)
-    if($hits < 1 || $hits > 500) {
+    if ($hits < 1 || $hits > 500) {
       return false;
     }
 
     // construct request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
         // check if URL does return a error and return false if it does
-    if(!$this->validResponse($urlQuery)) {
+    if (!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -262,7 +254,7 @@ class kSamsok {
     // format inputed $objectId
     $urlQuery = $this->uriFormat($objectId, 'xmlurl');
     // check if URL does return a error and return false if it does
-    if(!$this->validResponse($urlQuery)) {
+    if (!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -280,7 +272,7 @@ class kSamsok {
     // create the request URL
     $urlQuery = $this->url . 'x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
     // check if URL does return a error and return false if it does
-    if(!$this->validResponse($urlQuery)) {
+    if (!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
@@ -317,7 +309,7 @@ class kSamsok {
     // prepare url
     $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and return false if it does
-    if(!$this->validResponse($urlQuery)) {
+    if (!$this->validResponse($urlQuery)) {
       return false;
     }
     // get the XML
