@@ -21,8 +21,6 @@ class kSamsok {
   }
 
   protected function prepareUrl($url) {
-    // replace withe space
-    $url = preg_replace('/\\s/', '%20', $url);
     // Force UTF-8
     return utf8_decode($url);
   }
