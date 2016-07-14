@@ -8,10 +8,8 @@ class kSamsok {
     // checks if API Key or request URL is bad
     // check if URL does return a error
     $testQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
-    if (!$this->validResponse($testQuery)) {
-      // return false if response is invalid
-      return false;
-    }
+    // will return true || false
+    return $this->validResponse($testQuery);
   }
 
   // Checks if a valid response is returned
