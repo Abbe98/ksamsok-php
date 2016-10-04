@@ -129,6 +129,7 @@ class kSamsok {
     $id = str_replace('xml/', '', $id);
     $id = str_replace('rdf/', '', $id);
     $id = str_replace('html/', '', $id);
+    $id = str_replace('jsonld/', '', $id);
 
     // find spot ti insert format string
     $formatLocation = strrpos($id, '/', 0);
@@ -151,6 +152,9 @@ class kSamsok {
       case 'html':
         return substr_replace($id, '/html', $formatLocation, 0);
         break;
+      case 'jsonld':
+        return substr_replace($id, '/jsonld', $formatLocation, 0);
+        break;
       case 'rdfurl':
         return 'http://kulturarvsdata.se/' . substr_replace($id, '/rdf', $formatLocation, 0);
         break;
@@ -159,6 +163,9 @@ class kSamsok {
         break;
       case 'xmlurl':
         return 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
+        break;
+      case 'jsonldurl':
+        return 'http://kulturarvsdata.se/' . substr_replace($id, '/jsonld', $formatLocation, 0);
         break;
       case 'rawurl':
         return 'http://kulturarvsdata.se/' . $id;
