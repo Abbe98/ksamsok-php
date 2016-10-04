@@ -256,12 +256,7 @@ class kSamsok {
 
   public function object($objectId) {
     // format inputed $objectId
-    $urlQuery = $this->uriFormat($objectId, 'xmlurl');
-
-    // check if the base url is different from the default
-    if ($this->url !== 'http://kulturarvsdata.se/') {
-      $urlQuery = str_replace('http://kulturarvsdata.se/', $this->url, $urlQuery);
-    }
+    $urlQuery = $this->url . $this->uriFormat($objectId, 'xml');
 
     // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
