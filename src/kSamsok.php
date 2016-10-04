@@ -1,10 +1,11 @@
 <?php
 class kSamsok {
   public $key;
-  public $url = 'http://kulturarvsdata.se/';
+  public $url;
 
-  public function __construct($key) {
+  public function __construct($key, $url = 'http://kulturarvsdata.se/') {
     $this->key = $key;
+    $this->url = $url;
     // checks if API Key or request URL is bad
     // check if URL does return a error
     $testQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
