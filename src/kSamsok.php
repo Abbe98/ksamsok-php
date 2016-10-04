@@ -122,8 +122,8 @@ class kSamsok {
 
   public function uriFormat($id, $format, $validate = false) {
     // if the entire url is present strip it off
-    if (stripos($id, 'http://kulturarvsdata.se/') !== false) {
-      $id = str_replace('http://kulturarvsdata.se/', '', $id);
+    if (stripos($id, $this->url) !== false) {
+      $id = str_replace($this->url, '', $id);
     }
 
     // strip off format
@@ -137,7 +137,7 @@ class kSamsok {
 
     if ($validate) {
       // build URL/validate using call
-      $urlQuery = 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
+      $urlQuery = $this->url . substr_replace($id, '/xml', $formatLocation, 0);
       if (!$this->validResponse($urlQuery)) {
         return false;
       }
@@ -157,19 +157,19 @@ class kSamsok {
         return substr_replace($id, '/jsonld', $formatLocation, 0);
         break;
       case 'rdfurl':
-        return 'http://kulturarvsdata.se/' . substr_replace($id, '/rdf', $formatLocation, 0);
+        return $this->url . substr_replace($id, '/rdf', $formatLocation, 0);
         break;
       case 'htmlurl':
-        return 'http://kulturarvsdata.se/' . substr_replace($id, '/html', $formatLocation, 0);
+        return $this->url . substr_replace($id, '/html', $formatLocation, 0);
         break;
       case 'xmlurl':
-        return 'http://kulturarvsdata.se/' . substr_replace($id, '/xml', $formatLocation, 0);
+        return $this->url . substr_replace($id, '/xml', $formatLocation, 0);
         break;
       case 'jsonldurl':
-        return 'http://kulturarvsdata.se/' . substr_replace($id, '/jsonld', $formatLocation, 0);
+        return $this->url . substr_replace($id, '/jsonld', $formatLocation, 0);
         break;
       case 'rawurl':
-        return 'http://kulturarvsdata.se/' . $id;
+        return $this->url . $id;
         break;
       // defaults to 'raw'
       default:
