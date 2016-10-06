@@ -80,9 +80,11 @@ class kSamsok {
     if (isset($pres->pres_image)) {
       $i = 0;
       foreach ($pres->pres_image as $image) {
-        @$resultRecord['presentation']['images'][$i]['thumbnail'] = (string) $image->pres_src[0];
-        @$resultRecord['presentation']['images'][$i]['lowres'] = (string) $image->pres_src[1];
-        @$resultRecord['presentation']['images'][$i]['highres'] = (string) $image->pres_src[2];
+        // loop through the different source resolutions(type)
+        foreach ($image->pres_src as $src) {
+          @$type = (string) $src->attributes()->{'type'};
+          @$resultRecord['presentation']['images'][$i][$type] = (string) $src;
+        }
         @$resultRecord['presentation']['images'][$i]['by_line'] = (string) $image->pres_byline;
         @$resultRecord['presentation']['images'][$i]['motive'] = (string) $image->pres_motive;
         @$resultRecord['presentation']['images'][$i]['copyright'] = (string) $image->pres_copyright;
