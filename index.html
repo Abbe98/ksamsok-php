@@ -44,7 +44,7 @@
 			<h1>KSamsök-PHP</h1>
 
 			<p class="infobox">Looking for the <a href="http://www.ksamsok.se/in-english/">official K-Samsök(SOCH) API documentation</a>?</p>
-			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.7.2">version 0.7.2</a></p>
+			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.8.0">version 0.8.0</a></p>
 
 			<h3 id="intro">Introduction</h3>
 
@@ -65,8 +65,17 @@
 			<p>The API requires a API key that you can obtain by contacting the Swedish National Heritage Board. For development you can use the key <code>test</code>.</p>
 
 			<p>Create a new instance of the <code>KSamsok</code> class and include your API key.</p>
+			<ul>
+				<li>An optional parameter exists for setting custom K-Samsök endpoints.</li>
+			</ul>
+			<strong>Examples</strong>
+			<p>Basic example.</p>
 			<pre>
 				<span>$kSamsok = new KSamsok('test');</span>
+			</pre>
+			<p>Usage example with custom K-Samsök endpoint.</p>
+			<pre>
+				<span>$kSamsok = new KSamsok('test', 'https://example.com/endpoint');</span>
 			</pre>
 
 			<h2>Public Methods</h2>
@@ -139,19 +148,21 @@
 			<ul>
 				<li><code>object uri</code>(string), a valid URI for a object in K-Samsök. The parameters allows different types of URIs described below.</li>
 			</ul>
-			<p>Raw URL/URI such as:</p>
+			<p>Raw URLs/URIs such as:</p>
 			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/16000300020896</code></li>
 				<li><code>raa/fmi/10028201230001</code></li>
 			</ul>
-			<p>URL/URI to HTML, RDF or XML source:</p>
+			<p>HTML, JSONLD, RDF, XML resource URLs/URIs:</p>
 			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/xml/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/rdf/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/html/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/jsonld/16000300020896</code></li>
 				<li><code>raa/kmb/xml/16000300020896</code></li>
 				<li><code>raa/kmb/rdf/16000300020896</code></li>
 				<li><code>raa/kmb/html/16000300020896</code></li>
+				<li><code>raa/kmb/jsonld/16000300020896</code></li>
 			</ul>
 			<strong>Example</strong>
 			<p>Get all relations for the object <code>raa/fmi/10028201230001</code>:</p>
@@ -164,19 +175,21 @@
 			<ul>
 				<li><code>object uri</code>(string), a valid URI for a object in K-Samsök. The parameters allows different types of URIs described below.</li>
 			</ul>
-			<p>Raw URL/URI such as:</p>
+			<p>Raw URLs/URIs such as:</p>
 			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/16000300020896</code></li>
 				<li><code>raa/fmi/10028201230001</code></li>
 			</ul>
-			<p>URL/URI to HTML, RDF or XML source:</p>
+			<p>HTML, JSONLD, RDF, XML resource URLs/URIs:</p>
 			<ul>
 				<li><code>http://kulturarvsdata.se/raa/kmb/xml/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/rdf/16000300020896</code></li>
 				<li><code>http://kulturarvsdata.se/raa/kmb/html/16000300020896</code></li>
+				<li><code>http://kulturarvsdata.se/raa/kmb/jsonld/16000300020896</code></li>
 				<li><code>raa/kmb/xml/16000300020896</code></li>
 				<li><code>raa/kmb/rdf/16000300020896</code></li>
 				<li><code>raa/kmb/html/16000300020896</code></li>
+				<li><code>raa/kmb/jsonld/16000300020896</code></li>
 			</ul>
 			<strong>Example</strong>
 			<p>Return the object <code>shm/18797</code> based on the URL to its XML source:</p>
@@ -194,6 +207,8 @@
 						<li><code>rawurl</code></li>
 						<li><code>xml</code></li>
 						<li><code>xmlurl</code></li>
+						<li><code>jsonld</code></li>
+						<li><code>jsonldurl</code></li>
 						<li><code>rdf</code></li>
 						<li><code>rdfurl</code></li>
 						<li><code>html</code></li>
