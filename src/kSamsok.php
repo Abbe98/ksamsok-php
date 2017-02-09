@@ -38,6 +38,7 @@ class kSamsok {
   }
 
   protected function parseRecord($record) {
+    // SUPER HACCCKKY HICCUP THING that has been on my "to rewrite" list for a while.
     // use a shortcut $variable for presentation tags
     // if record is first xml tag parse it if not presentation is the first
     $pres = (empty($record->pres_item) ? $pres = $record : $record->pres_item);

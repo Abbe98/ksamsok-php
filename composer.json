@@ -1,13 +1,13 @@
 {
   "name": "abbe98/ksamsok-php",
-  "description": "PHP library for the K-Samsök API(SOCH).",
+  "description": "PHP library for the K-Samsök(SOCH) API.",
   "keywords": ["ksamsok", "API", "culture"],
-  "homepage": "http://abbe98.github.io/ksamsok-php/",
+  "homepage": "http://byabbe.se/ksamsok-php/",
   "license": "MIT",
   "authors": [
     {
       "name": "Albin Larsson",
-      "homepage": "http://abbe98.github.io/"
+      "homepage": "http://byabbe.se/"
     }
   ],
   "require": {
