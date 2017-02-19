@@ -5,4 +5,4 @@ php:
   - hhvm
   - nightly
 
-script: phpunit tests/kSamsokTest.php
+script: phpunit tests/kSamsokTest.php --bootstrap vendor/autoload.php
