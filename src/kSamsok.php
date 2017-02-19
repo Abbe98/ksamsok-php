@@ -14,19 +14,19 @@ class kSamsok {
   }
 
   // Checks if a valid response is returned
-  protected function validResponse($url) {
+  protected function validResponse($url): bool {
     // @ignore warning, it's handled below
     @$xml = file_get_contents($url);
     // check if file_get_contents returned a error or warning
     return ($xml === false ? false : true);
   }
 
-  protected function prepareUrl($url) {
+  protected function prepareUrl($url): string {
     // Force UTF-8
     return utf8_decode($url);
   }
 
-  protected function killXmlNamespace($xml) {
+  protected function killXmlNamespace($xml): string {
     $xml = str_replace('pres:', 'pres_', $xml);
     $xml = str_replace('georss:', 'georss_', $xml);
     $xml = str_replace('gml:', 'gml_', $xml);
@@ -37,12 +37,12 @@ class kSamsok {
     return $xml;
   }
 
-  protected function parseRecord($record) {
-    // SUPER HACCCKKY HICCUP THING that has been on my "to rewrite" list for a while.
+  protected function parseRecord($record): array {
     // use a shortcut $variable for presentation tags
-    // if record is first xml tag parse it if not presentation is the first
+    // if record is first xml tag parse it if, not presentation is the first
     $pres = (empty($record->pres_item) ? $pres = $record : $record->pres_item);
 
+    // SUPER HACCCKKY HICCUP THING that has been on my "to rewrite" list for a while.
     // @ignore and just leave array values empty if they don't exists
     @$resultRecord['presentation']['version'] = (string) $pres->pres_version;
     @$resultRecord['presentation']['uri'] = (string) $pres->pres_entityUri;
@@ -123,7 +123,7 @@ class kSamsok {
     return $resultRecord;
   }
 
-  public function uriFormat($id, $format, $validate = false) {
+  public function uriFormat($id, $format, $validate = false): string {
     // if the entire url is present strip it off
     if (stripos($id, $this->url) !== false) {
       $id = str_replace($this->url, '', $id);
@@ -142,7 +142,7 @@ class kSamsok {
       // build URL/validate using call
       $urlQuery = $this->url . substr_replace($id, '/xml', $formatLocation, 0);
       if (!$this->validResponse($urlQuery)) {
-        return false;
+        return '';
       }
     }
 
@@ -274,42 +274,38 @@ class kSamsok {
     return $this->parseRecord($xml);
   }
 
-  public function relations($objectId) {
+  public function relations($objectId): array {
     // format inputed $objectId
     $objectId = $this->uriFormat($objectId, 'raw');
     // create the request URL
     $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
-    // check if URL does return a error and return false if it does
+    // check if URL does return a error and return an empty array if it does
     if (!$this->validResponse($urlQuery)) {
-      return false;
+      return [];
     }
     // get the XML
     $xml = file_get_contents($urlQuery);
     $xml = new SimpleXMLElement($xml);
 
-    // get number of relations
-    $relations['count'] = (string) $xml->relations['count'];
+    $relations = array();
 
-    // foreach loop for all relations
-    $i = 0;
     foreach ($xml->relations->relation as $relation) {
-      // get the innerXML
-      $relations[$i]['link'] = (string) $relation;
-      // get the type attribute
-      $relations[$i]['type'] = (string) $relation['type'];
-      $i++;
+      $relationObj['link'] = (string) $relation;
+      $relationObj['type'] = (string) $relation['type'];
+
+      array_push($relations, $relationObj);
     }
 
     return $relations;
   }
 
-  public function searchHint($string, $count = 5) {
+  public function searchHint($string, $count = 5): array {
     if (!is_string($string)) {
-      return false;
+      return array();
     }
 
     if (!is_numeric($count) || $count < 1) {
-      return false;
+      return array();
     }
 
     // create the request URL
@@ -318,27 +314,22 @@ class kSamsok {
     $urlQuery = $this->prepareUrl($urlQuery);
     // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
-      return false;
+      return array();
     }
-    // get the XML
+
     $xml = file_get_contents($urlQuery);
     $xml = new SimpleXMLElement($xml);
 
     // process the xml to array
-    $result['count'] = (string) $xml->numberOfTerms;
+    $terms = array();
 
-    $i = 0;
     foreach ($xml->terms->term as $term) {
-      $terms[$i]['value'] = (string) $term->value;
-      $terms[$i]['count'] = (string) $term->count;
-      $i++;
+      $termObj['value'] = (string) $term->value;
+      $termObj['count'] = (string) $term->count;
+
+      array_push($terms, $termObj);
     }
 
-      // push $terms to $result
-    if (isset($terms)) {
-      $result['hints'] = $terms;
-    }
-
-    return $result;
+    return $terms;
   }
 }
