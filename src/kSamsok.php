@@ -3,7 +3,7 @@ class kSamsok {
   public $key;
   public $url;
 
-  public function __construct($key, $url = 'http://kulturarvsdata.se/') {
+  public function __construct(string $key, string $url = 'http://kulturarvsdata.se/') {
     $this->key = $key;
     $this->url = $url;
     // checks if API Key or request URL is bad
@@ -13,7 +13,7 @@ class kSamsok {
     return ($xml === false ? false : true);
   }
 
-  protected function killXmlNamespace($xml): string {
+  protected function killXmlNamespace(string $xml): string {
     $xml = str_replace('pres:', 'pres_', $xml);
     $xml = str_replace('georss:', 'georss_', $xml);
     $xml = str_replace('gml:', 'gml_', $xml);
@@ -24,7 +24,7 @@ class kSamsok {
     return $xml;
   }
 
-  protected function parseRecord($record): array {
+  protected function parseRecord(SimpleXMLElement $record): array {
     // use a shortcut $variable for presentation tags
     // if record is first xml tag parse it if, not presentation is the first
     $pres = (empty($record->pres_item) ? $pres = $record : $record->pres_item);
@@ -110,7 +110,7 @@ class kSamsok {
     return $resultRecord;
   }
 
-  public function uriFormat($id, $format, $validate = false): string {
+  public function uriFormat(string $id, string $format, bool $validate = false): string {
     // if the entire url is present strip it off
     if (stripos($id, $this->url) !== false) {
       $id = str_replace($this->url, '', $id);
@@ -169,18 +169,9 @@ class kSamsok {
     }
   }
 
-  public function search($text, $start, $hits, $images = false) {
-    // check if $text isn't a string
-    if (!is_string($text)) {
-      return false;
-    }
-
-    if (!is_numeric($start) || $start < 1) {
-      return false;
-    }
-
+  public function search(string $text, int $start, int $hits, bool $images = false) {
     // check if $hits(hitsPerPage) is valid(1-500)
-    if ($hits < 1 || $hits > 500) {
+    if ($hits < 1 || $hits > 500 || $start < 0) {
       return false;
     }
 
@@ -212,13 +203,10 @@ class kSamsok {
     return $result;
   }
 
-  public function geoSearch($west, $south, $east, $north, $start, $hits = 60) {
-    if (!is_numeric($start) || $start < 1) {
-      return false;
-    }
+  public function geoSearch(float $west, float $south, float $east, float $north, int $start, int $hits = 60) {
 
     // check if $hits(hitsPerPage) is valid(1-500)
-    if ($hits < 1 || $hits > 500) {
+    if ($hits < 1 || $hits > 500 || $start < 0) {
       return false;
     }
 
@@ -245,7 +233,7 @@ class kSamsok {
     return $result;
   }
 
-  public function object($objectId) {
+  public function object(string $objectId) {
     // format inputed $objectId
     $urlQuery = $this->url . $this->uriFormat($objectId, 'xml');
 
@@ -262,7 +250,7 @@ class kSamsok {
     return $this->parseRecord($xml);
   }
 
-  public function relations($objectId): array {
+  public function relations(string $objectId): array {
     // format inputed $objectId
     $objectId = $this->uriFormat($objectId, 'raw');
     // create the request URL
@@ -288,12 +276,8 @@ class kSamsok {
     return $relations;
   }
 
-  public function searchHint($string, $count = 5): array {
-    if (!is_string($string)) {
-      return [];
-    }
-
-    if (!is_numeric($count) || $count < 1) {
+  public function searchHint(string $string, int $count = 5): array {
+    if ($count < 1) {
       return [];
     }
 

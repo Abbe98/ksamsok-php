@@ -12,17 +12,13 @@ class kSamsokTest extends PHPUnit\Framework\TestCase {
       array('glass', 4000, 2, true, true),
       array('a', 2, 2, false, true),
       array('noresult ever super star what ever', 1, 60, false, true),
+      array('hello', 3.2, 3, false, true), // 3.2 converts to 3 and therefor passes
+      array('hello', 3, 3.2, false, true), // 3.2 converts to 3 and therefor passes
 
       array('hello', 3, 501, false, false),
       array('hello', 3, 0, false, false),
       array('hello', -3, 3, false, false),
       array('hello', 3, -3, true, false),
-      array('hello', 3.2, 3, false, false),
-      array('hello', 3, 3.2, false, false),
-      array(2, 3, 3, false, false),
-      array(2.2, 3, 4, false, false),
-      array('hello', 3, 'hello', false, false),
-      array('hello', 'hello', 7, false, false),
     );
   }
 
@@ -36,13 +32,13 @@ class kSamsokTest extends PHPUnit\Framework\TestCase {
       array('16.410484313964844', 59.070786792947565, '16.41958236694336', '59.074624595969645', 1, 60, true),
       array('16.410484313964844', '59.070786792947565', 16.41958236694336, '59.074624595969645', 1, 60, true),
       array('16.410484313964844', '59.070786792947565', '16.41958236694336', 59.074624595969645, 1, 60, true),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 60, true),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0.3, 60, true),
+      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 2.5, true), // 2.5 gets casted to int
 
-      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 60, false),
-      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0.3, 60, false),
       array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', -2, 60, false),
       array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 501, false),
       array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 0, false),
-      array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, 2.5, false),
       array('16.410484313964844', '59.070786792947565', '16.41958236694336', '59.074624595969645', 0, -2, false),
     );
   }
@@ -77,11 +73,11 @@ class kSamsokTest extends PHPUnit\Framework\TestCase {
     return array(
       array('Fiskmås', 6, true),
       array('', 7, true),
+      array(7, 6, true), // 7 gets cased to string
+      array('', 1.2, true), // 1.2 gets casted to int 1
 
       array('what string you can possible think of', 7, false),
-      array(7, 6, false),
       array('', -2, false),
-      array('', 0.2, false),
     );
   }
 
@@ -97,7 +93,6 @@ class kSamsokTest extends PHPUnit\Framework\TestCase {
       $this->assertArrayHasKey('hits', $result);
     }
 
-    // all URIs that shouldn't pass
     if (!$validate) {
       $this->assertFalse($result);
     }
