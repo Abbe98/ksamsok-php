@@ -5,5 +5,5 @@ php:
   - hhvm
   - nightly
 
-script: phpunit tests/kSamsokTest.php --bootstrap vendor/autoload.php
+script: phpunit kSamsokTest tests/kSamsokTest.php --bootstrap vendor/autoload.php
 before_script: composer update
