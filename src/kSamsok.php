@@ -21,11 +21,6 @@ class kSamsok {
     return ($xml === false ? false : true);
   }
 
-  protected function prepareUrl($url): string {
-    // Force UTF-8
-    return utf8_decode($url);
-  }
-
   protected function killXmlNamespace($xml): string {
     $xml = str_replace('pres:', 'pres_', $xml);
     $xml = str_replace('georss:', 'georss_', $xml);
@@ -197,13 +192,12 @@ class kSamsok {
     }
 
     // create the request URL
-    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . $text . '"&recordSchema=presentation';
+    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=text%3D"' . utf8_decode($text) . '"&recordSchema=presentation';
     // if $images = true add &thumbnailExists=j to url
     if ($images) {
       $urlQuery = $urlQuery . '&thumbnailExists=j';
     }
-    // prepare url
-    $urlQuery = $this->prepareUrl($urlQuery);
+
     // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
       return false;
@@ -309,9 +303,7 @@ class kSamsok {
     }
 
     // create the request URL
-    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . $string . '*&maxValueCount=' . $count;
-    // prepare url
-    $urlQuery = $this->prepareUrl($urlQuery);
+    $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . utf8_decode($string) . '*&maxValueCount=' . $count;
     // check if URL does return a error and return false if it does
     if (!$this->validResponse($urlQuery)) {
       return array();
