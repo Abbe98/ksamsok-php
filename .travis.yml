@@ -2,7 +2,6 @@ language: php
 php:
   - '7.0'
   - '7.1'
-  - hhvm
   - nightly
 
 script: phpunit kSamsokTest tests/kSamsokTest.php --bootstrap vendor/autoload.php
