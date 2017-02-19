@@ -276,13 +276,13 @@ class kSamsok {
 
     $xml = new SimpleXMLElement($xml);
 
-    $relations = array();
+    $relations = [];
 
     foreach ($xml->relations->relation as $relation) {
       $relationObj['link'] = (string) $relation;
       $relationObj['type'] = (string) $relation['type'];
 
-      array_push($relations, $relationObj);
+      $relations[] = $relationObj;
     }
 
     return $relations;
@@ -290,11 +290,11 @@ class kSamsok {
 
   public function searchHint($string, $count = 5): array {
     if (!is_string($string)) {
-      return array();
+      return [];
     }
 
     if (!is_numeric($count) || $count < 1) {
-      return array();
+      return [];
     }
 
     // create the request URL
@@ -303,19 +303,19 @@ class kSamsok {
     // get and validate the XML
     @$xml = file_get_contents($urlQuery);
     if ($xml === false) {
-      return array();
+      return [];
     }
 
     $xml = new SimpleXMLElement($xml);
 
     // process the xml to array
-    $terms = array();
+    $terms = [];
 
     foreach ($xml->terms->term as $term) {
       $termObj['value'] = (string) $term->value;
       $termObj['count'] = (string) $term->count;
 
-      array_push($terms, $termObj);
+      $terms[] = $termObj;
     }
 
     return $terms;
