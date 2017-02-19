@@ -9,15 +9,7 @@ class kSamsok {
     // checks if API Key or request URL is bad
     // check if URL does return a error
     $testQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&query=text%3D"test"&recordSchema=presentation';
-    // will return true || false
-    return $this->validResponse($testQuery);
-  }
-
-  // Checks if a valid response is returned
-  protected function validResponse($url): bool {
-    // @ignore warning, it's handled below
-    @$xml = file_get_contents($url);
-    // check if file_get_contents returned a error or warning
+    @$xml = file_get_contents($testQuery);
     return ($xml === false ? false : true);
   }
 
@@ -136,7 +128,8 @@ class kSamsok {
     if ($validate) {
       // build URL/validate using call
       $urlQuery = $this->url . substr_replace($id, '/xml', $formatLocation, 0);
-      if (!$this->validResponse($urlQuery)) {
+      @$xml = get_file_contents($urlQuery);
+      if ($xml === false) {
         return '';
       }
     }
@@ -198,12 +191,12 @@ class kSamsok {
       $urlQuery = $urlQuery . '&thumbnailExists=j';
     }
 
-    // check if URL does return a error and return false if it does
-    if (!$this->validResponse($urlQuery)) {
+    // get and validate the XML
+    @$xml = file_get_contents($urlQuery);
+    if ($xml === false) {
       return false;
     }
-    // get the XML
-    $xml = file_get_contents($urlQuery);
+
     // bypass XML namespace
     $xml = $this->killXmlNamespace($xml);
     $xml = new SimpleXMLElement($xml);
@@ -231,12 +224,13 @@ class kSamsok {
 
     // construct request URL
     $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=search&hitsPerPage=' . $hits . '&startRecord=' . $start . '&query=boundingBox=/WGS84%20"' . $west . '%20' . $south . '%20' . $east . '%20' . $north . '"&recordSchema=presentation';
-        // check if URL does return a error and return false if it does
-    if (!$this->validResponse($urlQuery)) {
+
+    // get and validate the XML
+    @$xml = file_get_contents($urlQuery);
+    if ($xml === false) {
       return false;
     }
-    // get the XML
-    $xml = file_get_contents($urlQuery);
+
     // bypass XML namespace
     $xml = $this->killXmlNamespace($xml);
     $xml = new SimpleXMLElement($xml);
@@ -255,12 +249,12 @@ class kSamsok {
     // format inputed $objectId
     $urlQuery = $this->url . $this->uriFormat($objectId, 'xml');
 
-    // check if URL does return a error and return false if it does
-    if (!$this->validResponse($urlQuery)) {
+    // get and validate the XML
+    @$xml = file_get_contents($urlQuery);
+    if ($xml === false) {
       return false;
     }
-    // get the XML
-    $xml = file_get_contents($urlQuery);
+
     // bypass XML namespace
     $xml = $this->killXmlNamespace($xml);
     $xml = new SimpleXMLElement($xml);
@@ -273,12 +267,13 @@ class kSamsok {
     $objectId = $this->uriFormat($objectId, 'raw');
     // create the request URL
     $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=getRelations&relation=all&objectId=' . $objectId;
-    // check if URL does return a error and return an empty array if it does
-    if (!$this->validResponse($urlQuery)) {
+
+    // get and validate the XML
+    @$xml = file_get_contents($urlQuery);
+    if ($xml === false) {
       return [];
     }
-    // get the XML
-    $xml = file_get_contents($urlQuery);
+
     $xml = new SimpleXMLElement($xml);
 
     $relations = array();
@@ -304,12 +299,13 @@ class kSamsok {
 
     // create the request URL
     $urlQuery = $this->url . 'ksamsok/api?x-api=' . $this->key . '&method=searchHelp&index=itemMotiveWord|itemKeyWord&prefix=' . utf8_decode($string) . '*&maxValueCount=' . $count;
-    // check if URL does return a error and return false if it does
-    if (!$this->validResponse($urlQuery)) {
+
+    // get and validate the XML
+    @$xml = file_get_contents($urlQuery);
+    if ($xml === false) {
       return array();
     }
 
-    $xml = file_get_contents($urlQuery);
     $xml = new SimpleXMLElement($xml);
 
     // process the xml to array
