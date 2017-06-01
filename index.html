@@ -14,7 +14,7 @@
 		<meta property="og:description" content="PHP library for the K-Samsök(SOCH) API." />
 
 		<link href="css/style.css" rel="stylesheet" />
-		<link href="http://fonts.googleapis.com/css?family=Roboto:400,500|Raleway:800" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css?family=Roboto:400,500|Raleway:800" rel="stylesheet" />
 	</head>
 	<body>
 		<nav>
@@ -33,8 +33,6 @@
 				<li class="header">Advanced Usage</li>
 				<li><a href="#extending">Extending</a></li>
 				<li><a href="#intro-extending">Extending: Introduction</a></li>
-				<li><a href="#prepareurl">prepareUrl()</a></li>
-				<li><a href="#validresponse">validResponse()</a></li>
 				<li><a href="#killxmlnamespace">killXmlNamespace()</a></li>
 				<li><a href="#parserecord">parseRecord()</a></li>
 				<li><a href="#example-extending">Extending: Example</a></li>
@@ -44,7 +42,7 @@
 			<h1>KSamsök-PHP</h1>
 
 			<p class="infobox">Looking for the <a href="http://www.ksamsok.se/in-english/">official K-Samsök(SOCH) API documentation</a>?</p>
-			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.8.0">version 0.8.0</a></p>
+			<p class="infobox">This documentation was last updated for KSamsök-PHP <a href="https://github.com/Abbe98/ksamsok-php/releases/tag/0.9.0">version 0.9.0</a></p>
 
 			<h3 id="intro">Introduction</h3>
 
@@ -237,33 +235,6 @@
 				<span>}</span>
 			</pre>
 
-			<h3 id="prepareurl">prepareUrl()</h3>
-			<p>The <code>prepareUrl()</code> function will prepare the request URI. This includes dealing with whitespace and encoding.</p>
-			<strong>Example</strong>
-			<p>Prepares request URL from string:</p>
-			<pre>
-				<span>customKSamsok extends kSamsok {</span>
-				<span>	public function customMethod($url) {</span>
-				<span>		$url = $this->prepareUrl($url);</span>
-				<span>	}</span>
-				<span>}</span>
-			</pre>
-
-			<h3 id="validresponse">validResponse()</h3>
-			<p>The function <code>validResponse()</code> takes the request URL(string) and checks for valid response.</p>
-			<strong>Example</strong>
-			<p>Looks for request errors:</p>
-			<pre>
-				<span>customKSamsok extends kSamsok {</span>
-				<span>	public function customMethod($url) {</span>
-				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		if ($this->validResponse($url) !== false) {</span>
-				<span>			// respond was okay</span>
-				<span>		}</span>
-				<span>	}</span>
-				<span>}</span>
-			</pre>
-
 			<h3 id="killxmlnamespace">killXmlNamespace()</h3>
 			<p>Because the KSamsök-PHP parsing function does not support XML Namespaces <code>killXmlNamespace()</code> is used to over ride them.</p>
 			<strong>Example</strong>
@@ -271,9 +242,8 @@
 			<pre>
 				<span>customKSamsok extends kSamsok {</span>
 				<span>	public function customMethod($url) {</span>
-				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		if ($this->validResponse($url) !== false) {</span>
-				<span>			$xml = file_get_contents($url);</span>
+				<span>		$xml = file_get_contents(utf8_decode($url));</span>
+				<span>		if ($xml) {</span>
 				<span>			$xml = $this->killXmlNamespace($xml);</span>
 				<span>		}</span>
 				<span>	}</span>
@@ -287,9 +257,8 @@
 			<pre>
 				<span>customKSamsok extends kSamsok {</span>
 				<span>	public function customMethod($url) {</span>
-				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		if ($this->validResponse($url) !== false) {</span>
-				<span>			$xml = file_get_contents($url);</span>
+				<span>		$xml = file_get_contents(utf8_decode($url));</span>
+				<span>		if ($xml) {</span>
 				<span>			$xml = $this->killXmlNamespace($xml);</span>
 				<span>			$xml = new SimpleXMLElement($xml);</span>
 				<span>			$result[] = array();</span>
@@ -307,26 +276,28 @@
 				<span>customKSamsok extends kSamsok {</span>
 				<span>	public function photoSearchNoCoords($text) {</span>
 				<span>		$url = $this->url . 'x-api=' . $this->key . '&method=search&hitsPerPage=250&query=itemType="Foto"%20and%20text="' . $text . '"%20and%20mediaType="image/jpeg"%20and%20thumbnailExists=j&recordSchema=presentation';</span>
-				<span>		$url = $this->prepareUrl($url);</span>
-				<span>		$this->validResponse($url);</span>
-				<span>		$xml = file_get_contents($url);</span>
-				<span>		$xml = $this->killXmlNamespace($xml);</span>
-				<span>		$xml = new SimpleXMLElement($xml);</span>
+				<span>		$xml = file_get_contents(utf8_decode($url));</span>
+				<span>		if ($xml) {</span>
+				<span>			$xml = $this->killXmlNamespace($xml);</span>
+				<span>			$xml = new SimpleXMLElement($xml);</span>
 				<span></span>
-				<span>		$firstResults[] = array();</span>
-				<span>		foreach ($xml->records->record as $record) {</span>
-				<span>			$firstResults[] = $this->parseRecord($record);</span>
-				<span>		}</span>
+				<span>			$firstResults[] = array();</span>
+				<span>			foreach ($xml->records->record as $record) {</span>
+				<span>				$firstResults[] = $this->parseRecord($record);</span>
+				<span>			}</span>
 				<span></span>
-				<span>		if (!empty($firstResults)) {</span>
-				<span>			for ($i=0; $i < count($firstResults); $i++) {</span>
-				<span>				if (empty($firstResults[$i]['presentation']['coordinates'])) {</span>
-				<span>					$results[] = $firstResults[$i];</span>
+				<span>			if (!empty($firstResults)) {</span>
+				<span>				for ($i=0; $i < count($firstResults); $i++) {</span>
+				<span>					if (empty($firstResults[$i]['presentation']['coordinates'])) {</span>
+				<span>						$results[] = $firstResults[$i];</span>
+				<span>					}</span>
 				<span>				}</span>
 				<span>			}</span>
-				<span>		}</span>
 				<span></span>
-				<span>		return $results;</span>
+				<span>			return $results;</span>
+				<span>		} else {</span>
+				<span>			return false;</span>
+				<span>		}</span>
 				<span>	}</span>
 				<span>}</span>
 			</pre>
