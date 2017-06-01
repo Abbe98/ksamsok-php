@@ -27,7 +27,6 @@ Documentation quick links:
 
  - [Extending](http://byabbe.se/ksamsok-php/#extending)
  - [Extending: Introduction](http://byabbe.se/ksamsok-php/#intro-extending)
- - [validResponse()](http://byabbe.se/ksamsok-php/#validresponse)
  - [killXmlNamespace()](http://byabbe.se/ksamsok-php/#killxmlnamespace)
  - [parseRecord()](http://byabbe.se/ksamsok-php/#parserecord)
  - [Extending: Example](http://byabbe.se/ksamsok-php/#example-extending)
