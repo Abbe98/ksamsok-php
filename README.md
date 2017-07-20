@@ -1,4 +1,4 @@
-# KSamsök-PHP
+# KSamsök-PHP [![Build Status](https://travis-ci.org/Abbe98/ksamsok-php.svg?branch=master)](https://travis-ci.org/Abbe98/ksamsok-php)
 
 KSamsök-PHP is a PHP library for the [K-Samsök(SOCH) API](http://www.ksamsok.se/in-english/). The K-Samsök aggregator has over 6.4 million cultural objects indexed from various sources.
 
