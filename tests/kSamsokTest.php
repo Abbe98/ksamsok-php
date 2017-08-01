@@ -50,11 +50,13 @@ class kSamsokTest extends PHPUnit\Framework\TestCase {
       array('raa/kmb/rdf/16000300020896', true), // RDF URI
       array('raa/kmb/html/16000300020896', true), // HTML URI
       array('raa/kmb/jsonld/16000300020896', true), // JSONLd URI
+      array('raa/kmb/museumdat/16000300020896', true), // MuseumDat URI
       array('http://kulturarvsdata.se/raa/kmb/16000300020896', true), // raw URL
       array('http://kulturarvsdata.se/raa/kmb/xml/16000300020896', true), // XML URL
       array('http://kulturarvsdata.se/raa/kmb/rdf/16000300020896', true), // RDF URL
       array('http://kulturarvsdata.se/raa/kmb/html/16000300020896', true), // HTML URL
       array('http://kulturarvsdata.se/raa/kmb/jsonld/16000300020896', true), // JSONLD URL
+      array('http://kulturarvsdata.se/raa/kmb/museumdat/16000300020896', true), // MuseumDat URI
 
       array('kulturarvsdata.se/raa/kmb/16000300020896', false), // raw URL missing http://
       array('rdf/16000300020896', false), // RDF URI missing provider

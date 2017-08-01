@@ -121,6 +121,7 @@ class kSamsok {
     $id = str_replace('rdf/', '', $id);
     $id = str_replace('html/', '', $id);
     $id = str_replace('jsonld/', '', $id);
+    $id = str_replace('museumdat/', '', $id);
 
     // find spot ti insert format string
     $formatLocation = strrpos($id, '/', 0);
@@ -147,6 +148,9 @@ class kSamsok {
       case 'jsonld':
         return substr_replace($id, '/jsonld', $formatLocation, 0);
         break;
+      case 'museumdat':
+        return substr_replace($id, '/museumdat', $formatLocation, 0);
+        break;
       case 'rdfurl':
         return $this->url . substr_replace($id, '/rdf', $formatLocation, 0);
         break;
@@ -158,6 +162,9 @@ class kSamsok {
         break;
       case 'jsonldurl':
         return $this->url . substr_replace($id, '/jsonld', $formatLocation, 0);
+        break;
+      case 'museumdaturl':
+        return $this->url . substr_replace($id, '/museumdat', $formatLocation, 0);
         break;
       case 'rawurl':
         return $this->url . $id;
